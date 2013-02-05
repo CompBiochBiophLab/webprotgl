@@ -120,7 +120,70 @@ SEQRES   5 W  101  ASN SER ARG PRO VAL SER ALA SER GLY ARG ASP ALA LEU
 SEQRES   6 W  101  LEU ASP GLN ILE ARG GLN GLY ILE GLN LEU LYS LYS THR
 SEQRES   7 W  101  GLU THR GLN GLU LYS ASN PRO LEU PRO SER LYS GLU THR
 SEQRES   8 W  101  ILE GLU GLN GLU LYS GLN ALA GLY GLU SER
-
+MODRES 3M3N HIC A   73  HIS  4-METHYL-HISTIDINE                                 
+MODRES 3M3N HIC B   73  HIS  4-METHYL-HISTIDINE                                 
+HET    HIC  A  73      11                                                       
+HET    HIC  B  73      11                                                       
+HET    ATP  A 400      31                                                       
+HET     CA  A 401       1                                                       
+HET    ATP  B 400      31                                                       
+HET     CA  B 401       1                                                       
+HETNAM     HIC 4-METHYL-HISTIDINE                                               
+HETNAM     ATP ADENOSINE-5'-TRIPHOSPHATE                                        
+HETNAM      CA CALCIUM ION                                                      
+FORMUL   1  HIC    2(C7 H11 N3 O2)                                              
+FORMUL   4  ATP    2(C10 H16 N5 O13 P3)                                         
+FORMUL   5   CA    2(CA 2+)                                                     
+HELIX    1   1 GLY A   55  LYS A   61  1                                   7    
+HELIX    2   2 ASN A   78  GLU A   93  1                                  16    
+HELIX    3   3 ALA A   97  HIS A  101  5                                   5    
+HELIX    4   4 PRO A  112  THR A  126  1                                  15    
+HELIX    5   5 GLN A  137  SER A  145  1                                   9    
+HELIX    6   6 PRO A  172  ILE A  175  5                                   4    
+HELIX    7   7 ALA A  181  GLU A  195  1                                  15    
+HELIX    8   8 ALA A  204  CYS A  217  1                                  14    
+HELIX    9   9 ASP A  222  SER A  233  1                                  12    
+HELIX   10  10 ASN A  252  CYS A  257  1                                   6    
+HELIX   11  11 PRO A  258  PHE A  262  5                                   5    
+HELIX   12  12 GLN A  263  ILE A  267  5                                   5    
+HELIX   13  13 GLY A  273  LYS A  284  1                                  12    
+HELIX   14  14 ILE A  289  ALA A  295  1                                   7    
+HELIX   15  15 GLY A  301  MET A  305  5                                   5    
+HELIX   16  16 GLY A  308  ALA A  321  1                                  14    
+ATOM      1  N   ASP A   3     -16.359  40.315  17.509  1.00 88.38           N  
+ATOM      2  CA  ASP A   3     -16.347  40.323  18.972  1.00 92.26           C  
+ATOM      3  C   ASP A   3     -16.474  41.732  19.569  1.00 95.26           C  
+ATOM      4  O   ASP A   3     -15.509  42.509  19.596  1.00 89.64           O  
+ATOM      5  CB  ASP A   3     -15.107  39.602  19.520  1.00 84.78           C  
+ATOM      6  CG  ASP A   3     -15.340  38.109  19.723  1.00 85.87           C  
+ATOM      7  OD1 ASP A   3     -16.486  37.722  20.044  1.00 87.04           O  
+ATOM      8  OD2 ASP A   3     -14.379  37.324  19.563  1.00 82.07           O  
+ATOM      9  N   GLU A   4     -17.681  42.038  20.046  1.00 94.50           N  
+ATOM     10  CA  GLU A   4     -18.005  43.318  20.668  1.00 92.38           C  
+ATOM     11  C   GLU A   4     -18.966  43.049  21.825  1.00 94.00           C  
+ATOM     12  O   GLU A   4     -19.780  42.121  21.752  1.00 94.31           O  
+ATOM     13  CB  GLU A   4     -18.650  44.265  19.649  1.00 94.68           C  
+ATOM     14  CG  GLU A   4     -19.896  43.697  18.965  1.00 97.61           C  
+ATOM     15  CD  GLU A   4     -19.585  42.530  18.032  1.00 99.95           C  
+ATOM     16  OE1 GLU A   4     -20.047  41.400  18.311  1.00 96.83           O  
+ATOM     17  OE2 GLU A   4     -18.870  42.738  17.027  1.00 98.10           O  
+ATOM     18  N   THR A   5     -18.873  43.857  22.883  1.00 88.95           N  
+ATOM     19  CA  THR A   5     -19.613  43.610  24.129  1.00 87.86           C  
+ATOM     20  C   THR A   5     -19.217  42.272  24.771  1.00 86.19           C  
+ATOM     21  O   THR A   5     -19.906  41.769  25.665  1.00 87.16           O  
+ATOM     22  CB  THR A   5     -21.156  43.657  23.936  1.00 90.25           C  
+ATOM     23  OG1 THR A   5     -21.642  42.371  23.517  1.00 86.04           O  
+ATOM     24  CG2 THR A   5     -21.544  44.727  22.914  1.00 88.67           C  
+ATOM     25  N   THR A   6     -18.108  41.701  24.307  1.00 81.50           N  
+ATOM     26  CA  THR A   6     -17.579  40.468  24.876  1.00 79.70           C  
+ATOM     27  C   THR A   6     -16.479  40.792  25.883  1.00 74.45           C  
+ATOM     28  O   THR A   6     -16.048  41.939  25.979  1.00 73.69           O  
+ATOM     29  CB  THR A   6     -17.036  39.515  23.788  1.00 82.25           C  
+ATOM     30  OG1 THR A   6     -16.305  40.264  22.808  1.00 80.14           O  
+ATOM     31  CG2 THR A   6     -18.183  38.780  23.105  1.00 85.77           C  
+ATOM     32  N   ALA A   7     -16.030  39.786  26.629  1.00 67.77           N  
+ATOM     33  CA  ALA A   7     -15.046  40.002  27.682  1.00 60.32           C  
+ATOM     34  C   ALA A   7     -13.611  39.955  27.159  1.00 61.43           C  
 """))
 
   def test_prepare(self):
