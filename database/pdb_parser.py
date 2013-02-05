@@ -1,9 +1,14 @@
 
 import re
 from datetime import datetime
+from io import BytesIO
+from struct import *
 
 class PDBParser:
   MIMETYPE = "text/pdb"
+  __PROTEIN = 0
+  __DNA     = 1
+  __RNA     = 2
 
   def __init__(self):
     self.__re_header = re.compile("\\s{4}((?:\\w|\\s){40})(\\d\\d)-(\\w{3})-(\\d\\d)\\s{3}(\\w{4})\\s*")
@@ -24,15 +29,20 @@ class PDBParser:
                   "TYR": ("Y", 12), "VAL": ("V",  7), "SEC": ("U",  6),
                   "PYL": ("O", 17), "ASX": ("B",  8), "GLX": ("Z",  9),
                   "XLE": ("J",  8), "XAA": ("X",  0), "UNK": ("X",  0)}
+    self.__123 = dict()
+    for item in self.__321:
+      (o, l) = self.__321[item]
+      self.__123[o] = (item, l)
+    #self.__aminolen = [5, 8, 6, 8, 9, 10, 4, 10, 8, 8, 9, 8, 8, 8, #N
+     #                  17, 7, 9, 11, 6, 7, 6, 7, 14, 0, 12, 9]
 
-    # TODO: SEC (N CA C O CB SEG)
-    #       PYL (N CA C O CB CG CD CE NZ CH CI1 OI2 CJ NK1 CK2 CL1 CL2 CL3) ???
+    # TODO: PYL (N CA C O CB CG CD CE NZ CH CI1 OI2 CJ NK1 CK2 CL1 CL2 CL3) ???
     self.__posdex = {  "N": 0,  "CA": 1,   "C": 2,   "O": 3,  "CB": 4,
-                      "CG": 5, "CG1": 5,  "OG": 5, "OG1": 5,  "SG": 5,
+                      "CG": 5, "CG1": 5,  "OG": 5, "OG1": 5,  "SG": 5, "SEG": 5,
                       "CD": 6, "CD1": 6, "CG2": 6, "ND1": 6, "OD1": 6,  "SD": 6,
                      "CD2": 7,  "CE": 7, "ND2": 7,  "NE": 7, "OD2": 7, "OE1": 7,
                      "CE1": 8,  "CZ": 8, "NE1": 8, "NE2": 8,  "NZ": 8, "OE2": 8,
-                     "CE2": 9, "NH1": 9, "CE3": 10, "NH2": 10,
+                     "CE2": 9,  "CH": 9, "NH1": 9, "CE3": 10, "NH2": 10,
                      "CZ2": 11, "OH": 11, "CZ3": 12, "CH2": 13}
 
   def parse(self, data):
@@ -62,10 +72,11 @@ class PDBParser:
       elif command[0:3] == "HET":
         self.__parse_heterogen(line[6:], sequences)
     data.close()
-    print(title)
-    print(date)
-    print(sequences)
-    print(models)
+    self.__prepare_models(sequences, models)
+    #print(title)
+    #print(date)
+    #print(sequences)
+    #print(models)
     return (title, date)
 
   def __parse_header(self, line):
@@ -100,7 +111,7 @@ class PDBParser:
            float(match.group(6).strip()))
     if not mod_chain.has_key(residue):
       mod_chain[residue] = dict()
-    if seqtype == "P":
+    if seqtype == self.__PROTEIN:
       special = False
       if array[residue] == "I" and name == "CD1":
         mod_chain[residue][7] = pos
@@ -125,16 +136,16 @@ class PDBParser:
       (seqtype, array, nonstd, atoms) = sequences[tag]
     else:
       if len(residues[0]) == 1:
-        seqtype = "R"
+        seqtype = self.__RNA
       elif len(residues[0]) == 2:
-        seqtype = "D"
+        seqtype = self.__DNA
       else:
-        seqtype = "P"
+        seqtype = self.__PROTEIN
       array = ""
       nonstd = dict()
       atoms = 0
     for res in residues:
-      if seqtype == "P":
+      if seqtype == self.__PROTEIN:
         if len(res) >= 3:
           key = res[0:3].upper()
           if self.__321.has_key(key):
@@ -144,7 +155,7 @@ class PDBParser:
           else:
             array += "!"
             nonstd[len(array)] = (key, 0)
-      elif seqtype == "D":
+      elif seqtype == self.__DNA:
         if len(res) >= 2:
           key = res[0:2].upper()
           array += self.__dna[key]
@@ -184,3 +195,45 @@ class PDBParser:
       return
     (_, _, nonstd, _) = sequences[cid]
     nonstd[num] = (hid, tot)
+
+  def __prepare_models(self, sequences, models):
+    binmod = dict()
+    version = 1
+    nan = float("NaN")
+    for modkey in models:
+      buf = BytesIO()
+      # Version, # chains
+      buf.write(pack("<HB", version, len(sequences)))
+      for seq_id in sequences:
+        (c_type, chain, nonstd, tot_atoms) = sequences[seq_id]
+        tot_res = len(chain)
+        print(tot_atoms)
+        # chain ID, chain type, # residues
+        buf.write(pack("<cBH{0}sl".format(tot_res),
+                       seq_id, c_type, tot_res, chain, tot_atoms))
+        aminos = models[modkey][seq_id]
+        xxx = 0
+        for i in range(0, tot_res):
+          amino = chain[i]
+          aminolen = self.__123[amino][1]
+          xxx += aminolen
+          if not aminos.has_key(i):
+            # Fill with emtpy values
+            for j in range(0, aminolen):
+              buf.write(pack("fff", nan, nan, nan))
+          else:
+            atoms = aminos[i]
+            for j in range(0, aminolen):
+              if not atoms.has_key(j):
+                buf.write(pack("fff", nan, nan, nan))
+              else:
+                buf.write(pack("fff", atoms[j][0], atoms[j][1], atoms[j][2]))
+        print(xxx)
+      buf.seek(0)
+#      f = open("asdf", "wb")
+ #     f.write(buf.read())
+  #    f.close()
+#      print(buf.read())
+ #         print(models[modkey][seq_id])
+
+        
