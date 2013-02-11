@@ -72,12 +72,12 @@ class PDBParser:
       elif command[0:3] == "HET":
         self.__parse_heterogen(line[6:], sequences)
     data.close()
-    self.__prepare_models(sequences, models)
+    return self.__prepare_models(sequences, models)[-1]
     #print(title)
     #print(date)
     #print(sequences)
     #print(models)
-    return (title, date)
+    #return (title, date)
 
   def __parse_header(self, line):
     match = self.__re_header.match(line)
@@ -230,10 +230,11 @@ class PDBParser:
                 buf.write(pack("fff", atoms[j][0], atoms[j][1], atoms[j][2]))
         print(xxx)
       buf.seek(0)
+      binmod[modkey] = buf
 #      f = open("asdf", "wb")
  #     f.write(buf.read())
   #    f.close()
 #      print(buf.read())
  #         print(models[modkey][seq_id])
-
+    return binmod
         
