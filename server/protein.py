@@ -23,7 +23,8 @@ class ProteinServer():
 
     try:
       pdb = PDBParser()
-      buf = pdb.parse(open("static/3M3N", "r"))
+      #buf = pdb.parse(open("static/3M3N", "r"))
+      buf = pdb.parse(open("static/2KXR.pdb", "r"))
       mtype = "application/octet-stream"
       print(mtype)
       res = Response(status=200, content_type=mtype)

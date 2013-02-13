@@ -73,7 +73,7 @@ function WebGLProtein()
       gShader = new Shader(gCamera.getGLContext());
       gShader.init("shaders/sphere.vertex", "shaders/sphere.fragment");
       sphere_ = createGLSphere(gCamera.getGLContext(), 2); // 3);
-      $.get("2KXR.pdb", pdbreader);
+      $.get("/protein/rcsb/pdb/3M3N", pdbreader, "binary");
     } catch (e) {
       alert(e);
     }
@@ -82,7 +82,8 @@ function WebGLProtein()
   function pdbreader(pdb) {
     console.log("Protein found. Displaying");
     var protein = new Protein();
-    protein.parsePDB(pdb);
+    protein.parse(pdb);
+    protein.setID("Asdf");
 
     protein.print();
 

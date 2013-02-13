@@ -24,7 +24,7 @@ class PDBParser:
                   "ASP": ("D",  8), "CYS": ("C",  6), "GLU": ("E",  9),
                   "GLN": ("Q",  9), "GLY": ("G",  4), "HIS": ("H", 10),
                   "ILE": ("I",  8), "LEU": ("L",  8), "LYS": ("K",  9),
-                  "MET": ("M",  8), "PHE": ("F", 10), "PRO": ("P",  7),
+                  "MET": ("M",  8), "PHE": ("F", 11), "PRO": ("P",  7),
                   "SER": ("S",  6), "THR": ("T",  7), "TRP": ("W", 14),
                   "TYR": ("Y", 12), "VAL": ("V",  7), "SEC": ("U",  6),
                   "PYL": ("O", 17), "ASX": ("B",  8), "GLX": ("Z",  9),
@@ -41,9 +41,9 @@ class PDBParser:
                       "CG": 5, "CG1": 5,  "OG": 5, "OG1": 5,  "SG": 5, "SEG": 5,
                       "CD": 6, "CD1": 6, "CG2": 6, "ND1": 6, "OD1": 6,  "SD": 6,
                      "CD2": 7,  "CE": 7, "ND2": 7,  "NE": 7, "OD2": 7, "OE1": 7,
-                     "CE1": 8,  "CZ": 8, "NE1": 8, "NE2": 8,  "NZ": 8, "OE2": 8,
+                     "CE1": 8,  "NE1": 8, "NE2": 8,  "NZ": 8, "OE2": 8,
                      "CE2": 9,  "CH": 9, "NH1": 9, "CE3": 10, "NH2": 10,
-                     "CZ2": 11, "OH": 11, "CZ3": 12, "CH2": 13}
+                      "CZ": 10, "CZ2": 11, "OH": 11, "CZ3": 12, "CH2": 13}
 
   def parse(self, data):
     title = ""
@@ -72,7 +72,10 @@ class PDBParser:
       elif command[0:3] == "HET":
         self.__parse_heterogen(line[6:], sequences)
     data.close()
-    return self.__prepare_models(sequences, models)[-1]
+    prepared = self.__prepare_models(sequences, models)
+    for mod in prepared:
+      return prepared[mod]
+#    return self.__prepare_models(sequences, models)[-1]
     #print(title)
     #print(date)
     #print(sequences)
@@ -103,9 +106,8 @@ class PDBParser:
       model[chain] = dict()
     mod_chain = model[chain]
 
-
     (seqtype, array, _, _) = sequences[chain]
-    residue = int(match.group(3).strip())
+    residue = int(match.group(3).strip()) - 1
     pos = (float(match.group(4).strip()),
            float(match.group(5).strip()),
            float(match.group(6).strip()))
@@ -119,12 +121,14 @@ class PDBParser:
       if array[residue] == "H" and name == "NE2":
         mod_chain[residue][9] = pos
         special = True
-      if array[residue] == "Y" and name == "CZ":
-        mod_chain[residue][10] = pos
+      if array[residue] == "R" and name == "CZ":
+        mod_chain[residue][8] = pos
         special = True
       if array[residue] != "!" and not special:
         if self.__posdex.has_key(name):
+          #print("has " + str(residue) + ", " + str(pos))
           mod_chain[residue][self.__posdex[name]] = pos
+#    raise Exception("STOP")
 
   def __parse_sequence(self, line, sequences):
     match = self.__re_sequence.match(line)
@@ -207,7 +211,7 @@ class PDBParser:
       for seq_id in sequences:
         (c_type, chain, nonstd, tot_atoms) = sequences[seq_id]
         tot_res = len(chain)
-        print(tot_atoms)
+        #print(tot_atoms)
         # chain ID, chain type, # residues
         buf.write(pack("<cBH{0}sl".format(tot_res),
                        seq_id, c_type, tot_res, chain, tot_atoms))
@@ -219,12 +223,14 @@ class PDBParser:
           xxx += aminolen
           if not aminos.has_key(i):
             # Fill with emtpy values
+            #print("Amino " + str(i) + "!!!")
             for j in range(0, aminolen):
               buf.write(pack("fff", nan, nan, nan))
           else:
             atoms = aminos[i]
             for j in range(0, aminolen):
               if not atoms.has_key(j):
+                #print("Atom " + str(j) + "!!!")
                 buf.write(pack("fff", nan, nan, nan))
               else:
                 buf.write(pack("fff", atoms[j][0], atoms[j][1], atoms[j][2]))
