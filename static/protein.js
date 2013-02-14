@@ -4,51 +4,42 @@
 
 function AminoAcid()
 {
-  var atoms_ = [];
-//  var bonds_ = [[0,1], [1,2], [2,3]];
-//  var size_ = 4;
-
-  this.addAtom = function(x, y, z) {
-    atoms_.push([x, y, z]);
+  this.addAtom = function(x, y, z, root, sphere, colour) {
+    if (x > 1e10) {
+      console.log(x);
+      console.log(Number.MAX_VALUE);
+      return;
+    }
+    var trf = root.addChild();
+    trf.translate([x, y, z]);
+    trf.addShape(sphere);
+    trf.setParameter("colour", createVectorParameter(colour));
   }
-//  this.addBond = function(bond) { bonds_.push(bond); }
 
-//  this.getBonds = function() { return [[0,1], [1,2], [2,3]]; }
-//  this.getSize = function() { return 4; }
-
-  this.prepareAtoms = function(root, sphere) {
-    for (var i in atoms_) {
-      if (atoms_[i][0] > 1e10)
-        continue;
-      var trf = root.addChild();
-      trf.translate(atoms_[i]);
-      trf.addShape(sphere);
-      var colour = [1., 1., 1., 1.];
-      /*switch (atoms_[i][0]) {
-        case "N":
-          colour = [0., 0., 1., 1.];
-          break;
-        case "O":
-          colour = [1., 0., 0., 1.];
-          break;
-        case "S":
-          colour = [1., 1., 0., 1.];
-        default:
-          break;
-      }*/
-
-      trf.setParameter("colour", createVectorParameter(colour));
+  this.getColour = function(index) {
+    console.log(index);
+    switch (index) {
+    case 0:
+      return this.N;
+    case 3:
+      console.log(this.O);
+      return this.O;
+    default:
+      return this.C;
     }
   }
-/*
-  this.setPosition = function(type, name, x, y, z) {
-    if (type == "H")
-      return;
 
-    atoms_[name] = [type, [x, y, z]];
+  this.prepareTransform = function(root) {
+    var trf = root.addChild();
+    //trf.setLabel(...);
+    return trf;
   }
-  */
 }
+
+AminoAcid.prototype.C = [1., 1., 1., 1.];
+AminoAcid.prototype.O = [1., 0., 0., 1.];
+AminoAcid.prototype.N = [0., 0., 1., 1.];
+AminoAcid.prototype.S = [1., 1., 0., 1.];
 
 ////////////////////////////////////////////////////////////////
 
@@ -56,6 +47,16 @@ function Alanine() {}
 Alanine.prototype = new AminoAcid;
 Alanine.prototype.getSize = function() { return 5; }
 Alanine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4]]; }
+/*Alanine.prototype.getColour = function(index) {
+  switch (index) {
+    case 0:
+      return N;
+    case 3:
+      return O;
+    default:
+      return C;
+  }
+}*/
 Alanine.prototype.newInstance = function() { return new Alanine(); }
 
 function Arginine() {}
@@ -180,6 +181,7 @@ Tyrosine.prototype.newInstance = function() { return new Tyrosine(); }
 
 function Valine() {}
 Valine.prototype = new AminoAcid;
+//Valine.prototype.constructor = Valine;
 Valine.prototype.getSize = function() { return 7; }
 Valine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [4,6]]; }
 Valine.prototype.newInstance = function() { return new Valine(); }
@@ -231,61 +233,24 @@ function Chain()
     aminos_.push(amino);
     return amino;
   }
-/*
-  this.addAminoAcid3 = function(code3) {
-    switch (code3) {
-    case "THR":
-      aminos_.push(new Threonine());
-      break;
-    default:
-      aminos_.push(new AminoAcid());
-    }
-  }
-*/
-  this.prepareAtoms = function(root, sphere) {
-    var trf = root.addChild();
-    for (i in aminos_) {
-      console.log(i);
-      aminos_[i].prepareAtoms(trf, sphere);
-    }
-  }
 
   this.print = function() {
   }
-/*
-  this.setAtomPosition = function(pos, type, name, x, y, z) {
-    if (pos > aminos_.length) {
-      throw new Error("Too far: " + pos);
-    }
-
-    var aa = aminos_[pos-1];
-    if (aa) {
-      aa.setPosition(type, name, x, y, z);
-    }
-  }
-  */
 }
 
 ////////////////////////////////////////////////////////////////
 
 function Protein()
 {
-	/*
-  this.addAminoAcid = function(chainID, code3) {
-    var chain = chains_[chainID];
-    if (!chain) {
-      chain = new Chain();
-      chains_[chainID] = chain;
-    }
-    
-    chain.addAminoAcid3(code3);
-  }
-*/
+  var root_;
+
   this.getBarycenter = function() {
-    return bbox_.getCenter();
+    return root_.getBoundingBox().getCenter();
   }
 
-  this.parse = function(data) {
+  this.parse = function(data, root, sphere) {
+    root_ = root.addChild();
+
     // Make a buffer on the data
     var buffer = new jDataView(data);
     var offset = 0;
@@ -312,12 +277,12 @@ function Protein()
       offset += 1;
       console.log("Type " + stype);
 
-      offset = this.__parseProtein(sid, buffer, offset);
+      offset = this.__parseProtein(sid, buffer, offset, root_, sphere);
       break;
     }
   }
 
-  this.__parseProtein = function(sid, buffer, offset) {
+  this.__parseProtein = function(sid, buffer, offset, root, sphere) {
     chain = new Chain();
     chains_[sid] = chain;
 
@@ -337,6 +302,7 @@ function Protein()
     var sum = 0;
     for (var res = 0; res < totRes; ++res) {
       var amino = chain.addAminoAcid1(sequence[res]);
+      var trf = amino.prepareTransform(root);
 //      console.log(amino.getSize());
       for (var atom = 0; atom < amino.getSize(); ++atom) {
         var x = buffer.getFloat32(offset, true);
@@ -345,7 +311,7 @@ function Protein()
         offset += 4;
         var z = buffer.getFloat32(offset, true);
         offset += 4;
-        amino.addAtom(x, y, z);
+        amino.addAtom(x, y, z, trf, sphere, amino.getColour(atom));
         ++sum;
       }
     }
@@ -381,7 +347,7 @@ function Protein()
       }
     }
   }
-*/
+
   this.prepareScene = function(camera, sphere) {
     var root = camera.getGLScene();
     for (c in chains_) {
@@ -390,7 +356,7 @@ function Protein()
       console.log("chain");
     }
   }
-
+*/
   this.print = function() {
     //console.log(id_);
     for (c in chains_) {

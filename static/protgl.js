@@ -81,8 +81,11 @@ function WebGLProtein()
 
   function pdbreader(pdb) {
     console.log("Protein found. Displaying");
+    var root = gCamera.getGLScene();
+    root.clear() // Replace with creating new child?
+
     var protein = new Protein();
-    protein.parse(pdb);
+    protein.parse(pdb, root, sphere_);
     protein.setID("Asdf");
 
     protein.print();
@@ -90,9 +93,7 @@ function WebGLProtein()
 //    gShader = new Shader(gCamera.getGLContext());
 //    gShader.init("shaders/sphere.vertex", "shaders/sphere.fragment");
 //    var glSphere = createGLSphere(gCamera.getGLContext(), 2); // 3); // 3: good enough
-    var root = gCamera.getGLScene();
-    root.clear()
-    protein.prepareScene(gCamera, sphere_);
+    //protein.prepareScene(gCamera, sphere_);
     root.setShader(gShader);
     gCamera.setTargetObject(protein);
 
