@@ -1,11 +1,5 @@
 #! /usr/bin/python
 
-#import os
-#import mimetypes
-#from paste import httpserver
-#import re
-#from webob import Request, Response
-#from static import FileApp
 from database.pdb_parser import PDBParser
 from webob.response import Response
 
@@ -23,17 +17,18 @@ class ProteinServer():
 
     try:
       pdb = PDBParser()
-      #buf = pdb.parse(open("static/3M3N", "r"))
-      buf = pdb.parse(open("static/2KXR.pdb", "r"))
+      buf = pdb.parse(open("static/3M3N", "r"))
+      #buf = pdb.parse(open("static/2KXR.pdb", "r"))
       mtype = "application/octet-stream"
-      print(mtype)
       res = Response(status=200, content_type=mtype)
       res.body = buf.read()
     except IOError as e:
       res = Response(status=404, content_type="text/html")
       res.body = "<html><body><h1>404 - Not found</h1></body></html>"
     except Exception as e:
-      print("errrrrrr" + str(e))
+      res = Response(status=500, content_type="text/html")
+      res.body = "<html><body><h1>500 - Internal server error</h1></body></html>"
+      print("errrrrrr " + str(e))
     finally:
       return res(env, start_response)
 
