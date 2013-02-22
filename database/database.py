@@ -1,42 +1,47 @@
 
-
+from cache import DBCache
 from datetime import datetime
+from io import BytesIO
 from protein import Protein
 from source import Source
 from user import User
+import cPickle
 import sqlite3
+
+class DBBlob(object):
+  ''' automatic converter for BytesIO'''
+  def __init__(self, bytes): self.__bytes = bytes
+
+  def quote(self):
+    return "'%s'" % sqlite.encode(self.__bytes)
 
 class Database:
   def __init__(self, strCnx = "database.sqlite"):
     self.__db = sqlite3.connect(strCnx)
-    self.__groups = dict()
-    self.__proteins = dict()
-    self.__sources = dict()
-    self.__users = dict()
+    self.__cache = DBCache()
+#    self.__groups = dict()
+#    self.__proteins = dict()
+#    self.__sources = dict()
+#    self.__users = dict()
 
-  def add_protein(self, protein_name, title, source_id, date):
-    name = protein_name.upper()
-    if self.__proteins.has_key(name):
-      raise Exception("Protein already exists")
-
-    c = self.__db.cursor()
-    c.execute("INSERT INTO Proteins (name, title, sid, date) VALUES (?,?,?,?)", (name, title, source_id, date.isoformat()))
-    self.__db.commit()
-    protein = Protein(c.lastrowid, name, title, source_id, date)
-    self.__proteins[name] = protein
-    return protein
+################################################################
 
   def add_source(self, sourcename, mimetype, url, description):
+    """Add a source if not exists; returns the source whether added or existent"""
     name = sourcename.lower()
-    if self.__sources.has_key((name, mimetype)):
-      raise Exception("Source already exists")
+    mime = mimetype.lower()
+    source = self.__cache.find_source(name, mime)
+    if source:
+      return source
 
     c = self.__db.cursor()
-    c.execute("INSERT INTO Sources (name, mimetype, url, description) VALUES (?,?,?,?)", (name, mimetype, url, description))
+    c.execute("INSERT INTO Sources (name, mimetype, url, description) VALUES (?,?,?,?)", (name, mime, url, description))
     self.__db.commit()
-    source = Source(c.lastrowid, name, mimetype, url, description)
-    self.__sources[(name, mimetype)] = source
+    source = Source(c.lastrowid, name, mime, url, description)
+    self.__cache.add_source(name, mime, source)
     return source
+
+################################################################
 
   def add_user(self, username, email, pwdhash):
     name = username.lower()
@@ -50,14 +55,49 @@ class Database:
     self.__users[name] = user
     return user
 
+################################################################
+
   def close(self):
     self.__db.close()
 
+################################################################
+
+  def find_source(self, sourcename, mimetype):
+    name = sourcename.lower()
+    mime = mimetype.lower()
+    source = self.__cache.find_source(name, mime)
+    if source:
+      return source
+
+    # Lookup in db?
+    return None
+
+################################################################
+
+  def get_protein_info(self, source, protein_name):
+    if not isinstance(source, Source):
+      raise Exception("Not a source")
+
+    # Verify if already exists
+    name = protein_name.upper()
+    sid = source.get_id()
+    protein = self.__cache.find_protein(name, sid)
+    if protein:
+      return protein
+
+    # Load from DB???
+
+    # Create new protein by downloading one
+    protein = self.__add_protein(source, name)
+    return protein
+
+################################################################
+
   def load(self):
-    self.__groups = dict()
-    self.__users = dict()
-    self.__sources = dict()
-    self.__proteins = dict()
+#    self.__groups = dict()
+#    self.__users = dict()
+#    self.__sources = dict()
+#    self.__proteins = dict()
 
     c = self.__db.cursor()
 
@@ -72,8 +112,38 @@ class Database:
       self.__users[name] = User(uid, name, email, pwd)
 
     for (sid, name, mime, url, desc) in c.execute("SELECT sid, name, mimetype, url, description FROM Sources"):
-      self.__sources[(name, mime)] = Source(sid, name, mime, url, desc)
+      self.__cache.add_source(name, mime, Source(sid, name, mime, url, desc))
 
     for (pid, name, title, sid, date) in c.execute("SELECT pid, name, title, sid, date FROM Proteins"):
-      self.__proteins[name] = Protein(pid, name, title, sid, datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%f"))
+      ids = set()
+      for mid in c.execute("SELECT model FROM Models WHERE pid=?", (pid,)):
+        ids.add(mid[0])
+      self.__cache.add_protein(name, sid, Protein(pid, name, title, sid, datetime.strptime(date, "%Y-%m-%dT%H:%M:%S"), ids))
+
+################################################################
+
+  def load_model(self, protein, mid):
+    if not isinstance(protein, Protein):
+      raise Exception("Not a protein")
+    c = self.__db.cursor()
+    for model in c.execute("SELECT data FROM Models WHERE pid=? AND model=?", (protein.get_id(), mid)):
+      return BytesIO(str(model[0]))
+
+################################################################
+
+  def __add_protein(self, source, name):
+    sid = source.get_id()
+    (title, date, models) = source.fetch(name)
+
+    c = self.__db.cursor()
+    c.execute("INSERT INTO Proteins (name, title, sid, date) VALUES (?,?,?,?)", (name, title, sid, date.isoformat()))
+    pid = c.lastrowid
+    ids = set()
+    for mid in models:
+      c.execute("INSERT INTO Models (pid, model, data) VALUES (?,?,?)", (pid, mid, sqlite3.Binary(models[mid].getvalue())))
+      ids.add(mid)
+    self.__db.commit()
+    protein = Protein(c.lastrowid, name, title, sid, date, ids)
+    self.__cache.add_protein(name, sid, protein)
+    return protein
 

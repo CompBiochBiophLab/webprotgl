@@ -73,8 +73,9 @@ class PDBParser:
         self.__parse_heterogen(line[6:], sequences)
     data.close()
     prepared = self.__prepare_models(sequences, models)
-    for mod in prepared:
-      return prepared[mod]
+    return (title.strip(), date, prepared)
+#    for mod in prepared:
+#      return prepared[mod]
 #    return self.__prepare_models(sequences, models)[-1]
     #print(title)
     #print(date)
