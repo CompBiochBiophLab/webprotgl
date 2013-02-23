@@ -19,17 +19,14 @@ class Database:
   def __init__(self, strCnx = "database.sqlite"):
     self.__db = sqlite3.connect(strCnx)
     self.__cache = DBCache()
-#    self.__groups = dict()
-#    self.__proteins = dict()
-#    self.__sources = dict()
-#    self.__users = dict()
+    self.__type_to_mime = {"pdb", "text/pdb"}
 
 ################################################################
 
-  def add_source(self, sourcename, mimetype, url, description):
+  def add_source(self, sourcename, basetype, url, description):
     """Add a source if not exists; returns the source whether added or existent"""
     name = sourcename.lower()
-    mime = mimetype.lower()
+    mime = self.__type_to_mime[basetype.lower()]
     source = self.__cache.find_source(name, mime)
     if source:
       return source
@@ -62,9 +59,9 @@ class Database:
 
 ################################################################
 
-  def find_source(self, sourcename, mimetype):
+  def find_source(self, sourcename, basetype):
     name = sourcename.lower()
-    mime = mimetype.lower()
+    mime = self.__type_to_mime[basetype.lower()]
     source = self.__cache.find_source(name, mime)
     if source:
       return source
