@@ -19,7 +19,7 @@ class Database:
   def __init__(self, strCnx = "database.sqlite"):
     self.__db = sqlite3.connect(strCnx)
     self.__cache = DBCache()
-    self.__type_to_mime = {"pdb", "text/pdb"}
+    self.__type_to_mime = {"pdb": "text/pdb"}
 
 ################################################################
 
@@ -101,7 +101,7 @@ class Database:
     c.execute("CREATE TABLE IF NOT EXISTS Groups (gid INTEGER, name TEXT, children BLOB, CONSTRAINT group_pk PRIMARY KEY(gid))")
     c.execute("CREATE TABLE IF NOT EXISTS Users (uid INTEGER, name TEXT, email TEXT, passwd BLOB, CONSTRAINT user_pk PRIMARY KEY(uid), CONSTRAINT user_uname UNIQUE(name))")
     c.execute("CREATE TABLE IF NOT EXISTS Sources (sid INTEGER PRIMARY KEY, name TEXT, mimetype TEXT, url TEXT, description TEXT, CONSTRAINT source_unique UNIQUE (name, mimetype))")
-    c.execute("CREATE TABLE IF NOT EXISTS Proteins (pid INTEGER PRIMARY KEY, name TEXT, title TEXT, sid INTEGER, date DATETIME)")
+    c.execute("CREATE TABLE IF NOT EXISTS Proteins (pid INTEGER PRIMARY KEY, name TEXT, title TEXT, sid INTEGER, date DATETIME, CONSTRAINT protein_unique UNIQUE (name, sid))")
     c.execute("CREATE TABLE IF NOT EXISTS Models (pid INTEGER, model INTEGER, data BLOB, CONSTRAINT model_pk PRIMARY KEY (pid, model))")
     self.__db.commit()
 
@@ -140,7 +140,7 @@ class Database:
       c.execute("INSERT INTO Models (pid, model, data) VALUES (?,?,?)", (pid, mid, sqlite3.Binary(models[mid].getvalue())))
       ids.add(mid)
     self.__db.commit()
-    protein = Protein(c.lastrowid, name, title, sid, date, ids)
+    protein = Protein(pid, name, title, sid, date, ids)
     self.__cache.add_protein(name, sid, protein)
     return protein
 

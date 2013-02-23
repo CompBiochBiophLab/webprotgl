@@ -2,18 +2,19 @@
 
 from database.database import Database
 from database.pdb_parser import PDBParser
+from traceback import print_exc
 from webob.response import Response
 
 class ProteinServer():
   def __init__(self):
     self.__proteins = dict()
-    self.__db = Database()
-    self.__db.load()
 
   def serve(self, env, start_response):
     path = env["PATH_INFO"].split("/")
 
     try:
+      self.__db = Database()
+      self.__db.load()
       server = path[2]
       basetype = path[3]
       protname = path[4]
@@ -45,7 +46,7 @@ class ProteinServer():
     except Exception as e:
       res = Response(status=500, content_type="text/html")
       res.body = "<html><body><h1>500 - Internal server error</h1></body></html>"
-      print("errrrrrr " + str(e))
+      print_exc()
     finally:
       return res(env, start_response)
 

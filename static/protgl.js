@@ -9,7 +9,7 @@ function WebGLProtein()
   this.loadpdb = function() {
     var input = document.getElementById("pdb_input");
     //var url = "http://www.rcsb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=" + input.value;
-    var url =  input.value;
+    var url = "/protein/rcsb/pdb/"+input.value;
     console.log("Looking for protein " + input.value);
     $.get(url, pdbreader);
   }

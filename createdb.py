@@ -8,7 +8,7 @@ if __name__ == "__main__":
     db.add_source("RCSB", "pdb",
       "http://www.rcsb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId={0}",
       "RCSB Protein Data Bank")
-    db.add_source("raspbian", "pdb", "http://192.168.2.128:8080/static/{0}.pdb", "Local test host")
+#    db.add_source("raspbian", "pdb", "http://192.168.2.128:8080/static/{0}.pdb", "Local test host")
     #db.add_user("jrenggli", "jrenggli@gmail.com", 42)
     
     #source = db.find_source("rcsb", "text/pdb")
