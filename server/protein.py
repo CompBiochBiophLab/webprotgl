@@ -36,7 +36,7 @@ class ProteinServer():
             break
           if model:
             res = Response(status=200, content_type="application/octet-stream")
-            res.body = model.read()
+            res.body = model
           else:
             res = Response(status=500, content_type="text/html")
             res.body = "<html><body><h1>500 - Internal server error</h1></body></html>"

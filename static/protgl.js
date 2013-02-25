@@ -11,7 +11,7 @@ function WebGLProtein()
     //var url = "http://www.rcsb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=" + input.value;
     var url = "/protein/rcsb/pdb/"+input.value;
     console.log("Looking for protein " + input.value);
-    $.get(url, pdbreader);
+    $.get(url, pdbreader, "binary");
   }
 
   var loadedScripts_ = 0;

@@ -9,6 +9,8 @@ class PDBParser:
   __PROTEIN = 0
   __DNA     = 1
   __RNA     = 2
+  VERSION_1 = 1
+  VERSION_CURRENT = VERSION_1
 
   def __init__(self):
     self.__re_header = re.compile("\\s{4}((?:\\w|\\s){40})(\\d\\d)-(\\w{3})-(\\d\\d)\\s{3}(\\w{4})\\s*")
@@ -73,15 +75,7 @@ class PDBParser:
         self.__parse_heterogen(line[6:], sequences)
     data.close()
     prepared = self.__prepare_models(sequences, models)
-    return (title.strip(), date, prepared)
-#    for mod in prepared:
-#      return prepared[mod]
-#    return self.__prepare_models(sequences, models)[-1]
-    #print(title)
-    #print(date)
-    #print(sequences)
-    #print(models)
-    #return (title, date)
+    return (title.strip(), date, self.VERSION_CURRENT, prepared)
 
   def __parse_header(self, line):
     match = self.__re_header.match(line)
@@ -203,12 +197,11 @@ class PDBParser:
 
   def __prepare_models(self, sequences, models):
     binmod = dict()
-    version = 1
     nan = float("NaN")
     for modkey in models:
       buf = BytesIO()
       # Version, # chains
-      buf.write(pack("<HB", version, len(sequences)))
+      buf.write(pack("<HB", self.VERSION_CURRENT, len(sequences)))
       for seq_id in sequences:
         (c_type, chain, nonstd, tot_atoms) = sequences[seq_id]
         tot_res = len(chain)
@@ -238,10 +231,5 @@ class PDBParser:
         print(xxx)
       buf.seek(0)
       binmod[modkey] = buf
-#      f = open("asdf", "wb")
- #     f.write(buf.read())
-  #    f.close()
-#      print(buf.read())
- #         print(models[modkey][seq_id])
     return binmod
         

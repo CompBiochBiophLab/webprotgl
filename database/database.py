@@ -97,12 +97,13 @@ class Database:
 #    self.__proteins = dict()
 
     c = self.__db.cursor()
+    d = self.__db.cursor()
 
     c.execute("CREATE TABLE IF NOT EXISTS Groups (gid INTEGER, name TEXT, children BLOB, CONSTRAINT group_pk PRIMARY KEY(gid))")
     c.execute("CREATE TABLE IF NOT EXISTS Users (uid INTEGER, name TEXT, email TEXT, passwd BLOB, CONSTRAINT user_pk PRIMARY KEY(uid), CONSTRAINT user_uname UNIQUE(name))")
     c.execute("CREATE TABLE IF NOT EXISTS Sources (sid INTEGER PRIMARY KEY, name TEXT, mimetype TEXT, url TEXT, description TEXT, CONSTRAINT source_unique UNIQUE (name, mimetype))")
     c.execute("CREATE TABLE IF NOT EXISTS Proteins (pid INTEGER PRIMARY KEY, name TEXT, title TEXT, sid INTEGER, date DATETIME, CONSTRAINT protein_unique UNIQUE (name, sid))")
-    c.execute("CREATE TABLE IF NOT EXISTS Models (pid INTEGER, model INTEGER, data BLOB, CONSTRAINT model_pk PRIMARY KEY (pid, model))")
+    c.execute("CREATE TABLE IF NOT EXISTS Models (pid INTEGER, model INTEGER, version INTEGER, date DATETIME, data BLOB, CONSTRAINT model_pk PRIMARY KEY (pid, model))")
     self.__db.commit()
 
     for (uid, name, email, pwd) in c.execute("SELECT uid, name, email, passwd FROM Users"):
@@ -111,9 +112,11 @@ class Database:
     for (sid, name, mime, url, desc) in c.execute("SELECT sid, name, mimetype, url, description FROM Sources"):
       self.__cache.add_source(name, mime, Source(sid, name, mime, url, desc))
 
+    c.execute("SELECT pid, name, title, sid, date FROM Proteins")
+    #for pid, name, title, sid, date in c.fetchone():
     for (pid, name, title, sid, date) in c.execute("SELECT pid, name, title, sid, date FROM Proteins"):
       ids = set()
-      for mid in c.execute("SELECT model FROM Models WHERE pid=?", (pid,)):
+      for mid in d.execute("SELECT model FROM Models WHERE pid=?", (pid,)):
         ids.add(mid[0])
       self.__cache.add_protein(name, sid, Protein(pid, name, title, sid, datetime.strptime(date, "%Y-%m-%dT%H:%M:%S"), ids))
 
@@ -124,20 +127,21 @@ class Database:
       raise Exception("Not a protein")
     c = self.__db.cursor()
     for model in c.execute("SELECT data FROM Models WHERE pid=? AND model=?", (protein.get_id(), mid)):
-      return BytesIO(str(model[0]))
+      return str(model[0])
 
 ################################################################
 
   def __add_protein(self, source, name):
     sid = source.get_id()
-    (title, date, models) = source.fetch(name)
+    (title, date, version, models) = source.fetch(name)
 
     c = self.__db.cursor()
     c.execute("INSERT INTO Proteins (name, title, sid, date) VALUES (?,?,?,?)", (name, title, sid, date.isoformat()))
     pid = c.lastrowid
     ids = set()
+    now = datetiem.now()
     for mid in models:
-      c.execute("INSERT INTO Models (pid, model, data) VALUES (?,?,?)", (pid, mid, sqlite3.Binary(models[mid].getvalue())))
+      c.execute("INSERT INTO Models (pid, model, version, date, data) VALUES (?,?,?)", (pid, mid, version, now.isoformat(), sqlite3.Binary(models[mid].getvalue())))
       ids.add(mid)
     self.__db.commit()
     protein = Protein(pid, name, title, sid, date, ids)
