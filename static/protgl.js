@@ -127,3 +127,5 @@ function WebGLProtein()
   */
   //SNAP
 }
+
+window["WebGLProtein"] = WebGLProtein;
