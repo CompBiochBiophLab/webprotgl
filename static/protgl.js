@@ -14,6 +14,7 @@ function WebGLProtein()
     $.get(url, pdbreader, "binary");
   }
 
+  //SNIP
   var loadedScripts_ = 0;
 
   var onScriptsLoaded = function()
@@ -62,6 +63,7 @@ function WebGLProtein()
   {
     loadScript(allScripts_[script]);
   }
+  //SNAP
 
   function protgl_start() {
     try
@@ -90,10 +92,6 @@ function WebGLProtein()
 
     protein.print();
 
-//    gShader = new Shader(gCamera.getGLContext());
-//    gShader.init("shaders/sphere.vertex", "shaders/sphere.fragment");
-//    var glSphere = createGLSphere(gCamera.getGLContext(), 2); // 3); // 3: good enough
-    //protein.prepareScene(gCamera, sphere_);
     root.setShader(gShader);
     gCamera.setTargetObject(protein);
 
@@ -121,4 +119,11 @@ function WebGLProtein()
 
   var sphere_;
   var isAnimating_ = false;
+  //SNIP
+  /*
+  //SNAP
+  protgl_start();
+  //SNIP
+  */
+  //SNAP
 }
