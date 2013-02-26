@@ -17,4 +17,4 @@ cat static/webgl/basicshapes.js >> $FILE_OUT
 cat static/webgl/transform.js >> $FILE_OUT
 cat static/webgl/movementmanager.js >> $FILE_OUT
 
-cat static/index.html | sed 's/protgl.js/webglprotein.js/g' static/protein.html
+cat static/index.html | sed 's/protgl.js/webglprotein.js/g' > static/protein.html
