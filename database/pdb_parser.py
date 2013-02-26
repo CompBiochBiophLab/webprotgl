@@ -20,7 +20,7 @@ class PDBParser:
     self.__re_model = re.compile("\\s{4}(\\s{0,3}\\d{1,4})")
     self.__re_atom = re.compile("[\\s\\d]{5}\\s([\\s\\w]{4}).[\\w]{3}\\s(.)([\\s\\d]{4}).\\s{3}(.{8})(.{8})(.{8})(.{6})(.{6})\\s{10}(.{2})(.{2})")
 
-    self.__rna = {"A", "U", "G", "C", "I"}
+    self.__rna = {"A": "A", "U": "U", "G": "G", "C": "C", "I": "I"}
     self.__dna = {"DA": "A", "DT": "T", "DG": "G", "DC": "C"}
     self.__321 = {"ALA": ("A",  5), "ARG": ("R", 11), "ASN": ("N",  8),
                   "ASP": ("D",  8), "CYS": ("C",  6), "GLU": ("E",  9),
