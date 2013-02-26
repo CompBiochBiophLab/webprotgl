@@ -1,1 +1,3 @@
 *.pyc
+database.sqlite
+static/webglprotein.raw
