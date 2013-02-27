@@ -1,6 +1,6 @@
 
-from pdb_parser import PDBParser
-from urllib import *
+from urllib.request import urlopen
+from .pdb_parser import PDBParser
 
 class Source:
   def __init__(self, id = -1, name = "", mimetype="", url="", description=""):
@@ -20,9 +20,6 @@ class Source:
 
     url = self.get_url(protein_name)
     return self.__parser.parse(urlopen(url))
-#    (title, date, structure, models) = parser.parse(urlopen(url))
-#    print(structure)
-#    return Protein(-1, name, title, source, date)
 
   def get_id(self):
     return self.__id

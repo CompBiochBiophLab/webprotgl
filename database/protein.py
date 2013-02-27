@@ -1,6 +1,6 @@
 
-from pdb_parser import PDBParser
-from source import Source
+from .pdb_parser import PDBParser
+from .source import Source
 
 class Protein:
   def __init__(self, id = -1, name = "", title = "", source = None, date = -1, models = set()):

@@ -1,5 +1,5 @@
 
-from user_group import UserGroup
+from .user_group import UserGroup
 
 class User:
   def __init__(self, id = -1, name = "", email = "", pwdhash = -1, groups = {}):
