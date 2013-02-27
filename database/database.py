@@ -121,7 +121,7 @@ class Database:
       raise Exception("Not a protein")
     c = self.__db.cursor()
     for model in c.execute("SELECT data FROM Models WHERE pid=? AND model=?", (protein.get_id(), mid)):
-      return str(model[0])
+      return model[0]
 
 ################################################################
 
