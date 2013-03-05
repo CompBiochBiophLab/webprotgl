@@ -8,8 +8,8 @@ function WebGLProtein()
 {
   this.loadpdb = function() {
     var input = document.getElementById("pdb_input");
-    //var url = "http://www.rcsb.org/pdb/download/downloadFile.do?fileFormat=pdb&compression=NO&structureId=" + input.value;
-    var url = "/protein/rcsb/pdb/"+input.value;
+    //var url = "/protein/rcsb/pdb/"+input.value;
+    var url = "/webglprotein/protein/rcsb/pdb/"+input.value;
     console.log("Looking for protein " + input.value);
     $.get(url, pdbreader, "binary");
   }
@@ -28,7 +28,6 @@ function WebGLProtein()
 
   var loadScript = function(url)
   {
-//  console.log(url);
     var head = document.getElementsByTagName("head")[0];
     var script = document.createElement("script");
     script.type="text/javascript";
@@ -75,7 +74,7 @@ function WebGLProtein()
       gShader = new Shader(gCamera.getGLContext());
       gShader.init("shaders/sphere.vertex", "shaders/sphere.fragment");
       sphere_ = createGLSphere(gCamera.getGLContext(), 2); // 3);
-      $.get("/protein/rcsb/pdb/3M3N", pdbreader, "binary");
+      $.get("/webglprotein/protein/rcsb/pdb/2KXR", pdbreader, "binary");
     } catch (e) {
       alert(e);
     }
@@ -128,4 +127,12 @@ function WebGLProtein()
   //SNAP
 }
 
+WebGLProtein.prototype.loadpdb = function() {
+  var input = document.getElementById("pdb_input");
+  var url = "/webglprotein/protein/rcsb/pdb/"+input.value;
+  console.log("Looking for protein " + input.value);
+  $.get(url, pdbreader, "binary");
+}
+
 window["WebGLProtein"] = WebGLProtein;
+WebGLProtein.prototype["loadpdb"] = WebGLProtein.prototype.loadpdb;

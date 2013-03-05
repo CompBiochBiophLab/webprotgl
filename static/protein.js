@@ -7,7 +7,6 @@ function AminoAcid()
   this.addAtom = function(x, y, z, root, sphere, colour) {
     if (x > 1e10) {
       console.log(x);
-      console.log(Number.MAX_VALUE);
       return;
     }
     var trf = root.addChild();
@@ -25,6 +24,10 @@ function AminoAcid()
     default:
       return this.C;
     }
+  }
+
+  this.getSize = function() {
+    return 0;
   }
 
   this.prepareTransform = function(root) {

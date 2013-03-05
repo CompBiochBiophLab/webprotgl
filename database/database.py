@@ -139,9 +139,9 @@ class Database:
     c.execute("INSERT INTO Proteins (name, title, sid, date) VALUES (?,?,?,?)", (name, title, sid, date.isoformat()))
     pid = c.lastrowid
     ids = set()
-    now = datetiem.now()
+    now = datetime.now()
     for mid in models:
-      c.execute("INSERT INTO Models (pid, model, version, date, data) VALUES (?,?,?)", (pid, mid, version, now.isoformat(), sqlite3.Binary(models[mid].getvalue())))
+      c.execute("INSERT INTO Models (pid, model, version, date, data) VALUES (?,?,?,?,?)", (pid, mid, version, now.isoformat(), sqlite3.Binary(models[mid].getvalue())))
       ids.add(mid)
     self.__db.commit()
     protein = Protein(pid, name, title, sid, date, ids)
