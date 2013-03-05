@@ -53,10 +53,11 @@ class PDBParser:
     sequences = dict()
     models = dict()
     id_mod = -1
-    for line in data.readlines():
+    for bline in data.readlines():
+      line = bline.decode("utf-8")
       command = line[0:6].upper()
       if command[0:4] == "ATOM":
-        if not models.has_key(id_mod):
+        if not id_mod in models:
           models[id_mod] = dict()
         self.__parse_atom(line[6:], sequences, models[id_mod])
       elif command == "HEADER":
@@ -95,9 +96,9 @@ class PDBParser:
     match = self.__re_atom.match(line)
     name = match.group(1).strip().upper()
     chain = match.group(2)
-    if not sequences.has_key(chain):
+    if not chain in sequences:
       return
-    if not model.has_key(chain):
+    if not chain in model:
       model[chain] = dict()
     mod_chain = model[chain]
 
@@ -106,7 +107,7 @@ class PDBParser:
     pos = (float(match.group(4).strip()),
            float(match.group(5).strip()),
            float(match.group(6).strip()))
-    if not mod_chain.has_key(residue):
+    if not residue in mod_chain:
       mod_chain[residue] = dict()
     if seqtype == self.__PROTEIN:
       special = False
@@ -120,10 +121,8 @@ class PDBParser:
         mod_chain[residue][8] = pos
         special = True
       if array[residue] != "!" and not special:
-        if self.__posdex.has_key(name):
-          #print("has " + str(residue) + ", " + str(pos))
+        if name in self.__posdex:
           mod_chain[residue][self.__posdex[name]] = pos
-#    raise Exception("STOP")
 
   def __parse_sequence(self, line, sequences):
     match = self.__re_sequence.match(line)
@@ -131,7 +130,7 @@ class PDBParser:
       return
     tag = match.group(1)
     residues = match.group(3).split(" ")
-    if sequences.has_key(tag):
+    if tag in sequences:
       (seqtype, array, nonstd, atoms) = sequences[tag]
     else:
       if len(residues[0]) == 1:
@@ -147,7 +146,7 @@ class PDBParser:
       if seqtype == self.__PROTEIN:
         if len(res) >= 3:
           key = res[0:3].upper()
-          if self.__321.has_key(key):
+          if key in self.__321:
             (l, a) = self.__321[key]
             array += l
             atoms += a
@@ -172,9 +171,9 @@ class PDBParser:
     cid = match.group(2)
     num = int(match.group(3).strip())
     res = match.group(4).strip()
-    if not self.__321.has_key(res):
+    if not res in self.__321:
       return
-    if not sequences.has_key(cid):
+    if not cid in sequences:
       return
     (a, array, b, atoms) = sequences[cid]
     if len(array) <= num:
@@ -190,7 +189,7 @@ class PDBParser:
     cid = match.group(2)
     num = int(match.group(3).strip())
     tot = int(match.group(5).strip())
-    if not sequences.has_key(cid):
+    if not cid in sequences:
       return
     (_, _, nonstd, _) = sequences[cid]
     nonstd[num] = (hid, tot)
@@ -205,7 +204,6 @@ class PDBParser:
       for seq_id in sequences:
         (c_type, chain, nonstd, tot_atoms) = sequences[seq_id]
         tot_res = len(chain)
-        #print(tot_atoms)
         # chain ID, chain type, # residues
         buf.write(pack("<cBH{0}sl".format(tot_res),
                        seq_id, c_type, tot_res, chain, tot_atoms))
@@ -215,20 +213,17 @@ class PDBParser:
           amino = chain[i]
           aminolen = self.__123[amino][1]
           xxx += aminolen
-          if not aminos.has_key(i):
+          if not i in aminos:
             # Fill with emtpy values
-            #print("Amino " + str(i) + "!!!")
             for j in range(0, aminolen):
               buf.write(pack("fff", nan, nan, nan))
           else:
             atoms = aminos[i]
             for j in range(0, aminolen):
-              if not atoms.has_key(j):
-                #print("Atom " + str(j) + "!!!")
+              if not j in atoms:
                 buf.write(pack("fff", nan, nan, nan))
               else:
                 buf.write(pack("fff", atoms[j][0], atoms[j][1], atoms[j][2]))
-        print(xxx)
       buf.seek(0)
       binmod[modkey] = buf
     return binmod

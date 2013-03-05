@@ -1,6 +1,6 @@
 
-from pdb_parser import PDBParser
-from urllib import *
+from urllib.request import urlopen
+from .pdb_parser import PDBParser
 
 class Source:
   def __init__(self, id = -1, name = "", mimetype="", url="", description=""):
