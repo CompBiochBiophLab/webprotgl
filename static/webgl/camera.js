@@ -32,12 +32,11 @@ function Camera(canvas)
   var aperture_   = 1.047197551; // 60 deg
   var near_       = 1e-1;//1e-5;
   var far_        = 100000.;//1e4;
-  var eye_        = new Float32Array(3); eye_[2] = 50.;
-  var direction_  = new Float32Array(3); direction_[2] = -1.;
-  var up_         = new Float32Array(3); up_[1] = 1.;
-//  var right_      = [1., 0., 0.];
+  var eye_        = [0., 0., 50.];
+  var direction_  = [0., 0., -1.];
+  var up_         = [0., 1., 0.];
+  var right_      = [1., 0., 0.];
   var tanHalfAperture_  = Math.tan(aperture_ * 0.5);
-  var target_     = new Float32Array(3);
 
   var handler_;
   var persp_ = initPerspective(canvas);
@@ -48,6 +47,23 @@ function Camera(canvas)
 // Main function (display to screen)
 ////////////////////////////////////////////////////////////////
 
+  this.castRay = function(mouse)
+  {
+    r = [0., 0., 0.];
+    u = [0., 0., 0.];
+    dir = [0., 0., 0.];
+    tdl.fast.mulScalarVector(r, mouse[0] * tanHalfAperture_ * gl_.viewportWidth / gl_.viewportHeight, right_);
+    tdl.fast.mulScalarVector(u, mouse[1] * tanHalfAperture_, up_);
+    tdl.fast.addVector(dir, direction_, r);
+    tdl.fast.addVector(dir, dir, u);
+    
+    return scene_.castRay([eye_, dir]);
+    //console.log("Vector [" + t[0] + ", " + t[1] + ", " + t[2] + "]");
+    //rayDir = direction_ + tdl.fast.right_
+  }
+  
+////////////////////////////////////////////////////////////////
+
   this.display = function()
   {
     gl_.clear(gl_.COLOR_BUFFER_BIT | gl_.DEPTH_BUFFER_BIT);
@@ -55,8 +71,9 @@ function Camera(canvas)
     // Perspective matrix
     tdl.fast.matrix4.perspective(persp_, aperture_, gl_.viewportWidth / gl_.viewportHeight, near_, far_);
     // Look at: TODO: eye + direction. Use vectors !!!
-    tdl.fast.addVector(target_, eye_, direction_);
-    tdl.fast.matrix4.lookAt(lookAt_, eye_, target_, up_);
+    target = [0., 0., 0.];
+    tdl.fast.addVector(target, eye_, direction_);
+    tdl.fast.matrix4.lookAt(lookAt_, eye_, target, up_);
     tdl.fast.matrix4.mul(lookAt_, lookAt_, persp_);
 
     scene_.display(lookAt_, eye_, gl_);
@@ -83,6 +100,7 @@ function Camera(canvas)
 
     tdl.fast.normalize(direction_, direction_);
     tdl.fast.normalize(up_, up_);
+    tdl.fast.cross(right_, direction_, up_);
   }
 
 ////////////////////////////////////////////////////////////////

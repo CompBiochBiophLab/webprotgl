@@ -13,18 +13,26 @@ function BBox()
     return true;
   }
 
+////////////////////////////////////////////////////////////////
+
   this.getCenter = function() {
     var b = [(min_[0] + max_[0]) * 0.5, (min_[1] + max_[1]) * 0.5, (min_[2] + max_[2]) * 0.5];
     return b;
   }
 
+////////////////////////////////////////////////////////////////
+
   this.getMax = function() {
     return max_;
   }
 
+////////////////////////////////////////////////////////////////
+
   this.getMin = function() {
     return min_;
   }
+
+////////////////////////////////////////////////////////////////
 
   this.include = function(v) {
     var changed = false;
@@ -43,6 +51,8 @@ function BBox()
     return changed;
   }
 
+////////////////////////////////////////////////////////////////
+
   this.includeBBox = function(bbox) {
     if (bbox.isEmpty())
       return false;
@@ -52,9 +62,52 @@ function BBox()
     return changed;
   }
 
+////////////////////////////////////////////////////////////////
+
+  this.intersects = function(ray) {
+    if (that.isEmpty())
+      return -1.;
+
+    var tIn = -Number.MAX_VALUE;
+    var tOut = Number.MAX_VALUE;
+
+    for (var axis = 0; axis < 3; ++axis) {
+      if (ray[1][axis] == 0.) {
+        if (ray[0][axis] < min_[axis] || ray[0][axis] > max_[axis])
+          return -1;
+      } else {
+        var locIn = (min_[axis] - ray[0][axis]) / ray[1][axis];
+        var locOut = (max_[axis] - ray[0][axis]) / ray[1][axis];
+
+        if (locIn <= 0. && locOut <= 0.)
+          return -1;
+
+        if (locIn > locOut) {
+          var tmp = locIn;
+          locIn = locOut;
+          locOut = tmp;
+        }
+
+        if (locIn > tIn)
+          tIn = locIn;
+        if (locOut < tOut)
+          tOut = locOut;
+      }
+    }
+
+    if (tIn < tOut)
+      return tIn;
+
+    return -1;
+  }
+
+////////////////////////////////////////////////////////////////
+
   this.isEmpty = function() {
     return min_[0] > max_[0];
   }
+
+////////////////////////////////////////////////////////////////
 
   this.multiply = function(matrix) {
     if (that.isEmpty())
@@ -76,6 +129,8 @@ function BBox()
 
     return bbox;
   }
+
+////////////////////////////////////////////////////////////////
 
   var min_ = [ Number.MAX_VALUE,  Number.MAX_VALUE,  Number.MAX_VALUE];
   var max_ = [-Number.MAX_VALUE, -Number.MAX_VALUE, -Number.MAX_VALUE];

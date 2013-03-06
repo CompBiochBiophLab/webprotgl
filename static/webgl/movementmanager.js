@@ -70,6 +70,7 @@ function CameraMovementManager(camera, stepSize)
         }
         break;
       default:
+        camera_.castRay([mouse.screenX, mouse.screenY]);
         break;
     }
   }
@@ -102,10 +103,16 @@ function MovementManager(camera)
   onMouseUp    = function(event) { event.evt_ = "up"; camera_.onMouseEvent(event); }
   onMouseMove  = function(event) { event.evt_ = "move"; camera_.onMouseEvent(event); }
   onMouseWheel = function(event) {
-    if (event.detail < 0)
+    if (event.wheelDelta) {
+      if (event.wheelDelta > 0)
+        event.evt_ = "wheelUp";
+      else
+        event.evt_ = "wheelDown";
+    } else if (event.detail < 0) {
       event.evt_ = "wheelUp";
-    else
+    } else {
       event.evt_ = "wheelDown";
+    }
 
     camera_.onMouseEvent(event);
   }

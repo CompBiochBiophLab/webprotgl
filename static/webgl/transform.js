@@ -16,6 +16,8 @@ function Transform()
   var children_ = [];
   var params_ = {};
 
+////////////////////////////////////////////////////////////////
+
   this.addChild = function() {
     var child = new Transform();
     child.setParent(that);
@@ -24,6 +26,8 @@ function Transform()
     return child;
   }
 
+////////////////////////////////////////////////////////////////
+
   this.addShape = function(shape) {
     shapes_.push(shape);
     //if (parent_ && bbox_.include(shape.getBoundingBox().multiply(world_))) {
@@ -31,6 +35,23 @@ function Transform()
       parent_.updateBoundingBox(true);
     }
   }
+
+////////////////////////////////////////////////////////////////
+
+  this.castRay = function(ray) {
+    if (!visible_ || !selectable_) {
+      return null;
+    }
+    
+    if (bbox_.intersects(ray) < 0.) {
+      return null;
+    }
+    
+    console.log("x");
+    return null;
+  }
+  
+////////////////////////////////////////////////////////////////
 
   this.clear = function() {
     bbox_ = new BBox();
@@ -44,6 +65,8 @@ function Transform()
     params_ = {};
   }
 
+////////////////////////////////////////////////////////////////
+
   this.findParameter = function(name) {
     var p = params_[name];
     if (p)
@@ -55,9 +78,13 @@ function Transform()
     return null;
   }
 
+////////////////////////////////////////////////////////////////
+
   this.getBoundingBox = function() {
     return bbox_;
   }
+
+////////////////////////////////////////////////////////////////
 
   this.getShader = function() {
     if (shader_)
@@ -72,6 +99,8 @@ function Transform()
   this.getWorldMatrix = function() {
     return world_;
   }
+
+////////////////////////////////////////////////////////////////
 
   this.display = function(camera, eye, gl) {
     if (!visible_)

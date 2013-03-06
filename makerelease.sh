@@ -7,7 +7,6 @@ cat static/base.js >> $FILE_OUT
 cat static/webgl/boundingbox.js >> $FILE_OUT
 cat static/webgl/camera.js >> $FILE_OUT
 cat static/webgl/fast.js >> $FILE_OUT
-cat static/webgl/mouse.js >> $FILE_OUT
 cat static/webgl/shader.js >> $FILE_OUT
 cat static/webgl/shaderparameter.js >> $FILE_OUT
 cat static/webgl/shape.js >> $FILE_OUT
