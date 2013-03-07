@@ -102,6 +102,12 @@ function Transform()
 
 ////////////////////////////////////////////////////////////////
 
+  this.getVisibility = function() {
+    return visible_;
+  }
+
+////////////////////////////////////////////////////////////////
+
   this.display = function(camera, eye, gl) {
     if (!visible_)
       return;
@@ -141,26 +147,38 @@ function Transform()
     }
   }
 
+////////////////////////////////////////////////////////////////
+
   this.setParameter = function(name, param) {
     params_[name] = param;
   }
+
+////////////////////////////////////////////////////////////////
 
   this.setParent = function(mum) {
     parent_ = mum;
   }
 
+////////////////////////////////////////////////////////////////
+
   this.setShader = function(shader) {
     shader_ = shader;
   }
+
+////////////////////////////////////////////////////////////////
 
   this.setVisibility = function(isVisible) {
     visible_ = isVisible;
   }
 
+////////////////////////////////////////////////////////////////
+
   this.translate = function(position) {
     local_ = tdl.fast.matrix4.translate(local_, position);
     that.updateWorldMatrix0();
   }
+
+////////////////////////////////////////////////////////////////
 
   this.updateBoundingBox = function(updateParent) {
     var clearBox = new BBox();
@@ -179,6 +197,8 @@ function Transform()
     }
   }
 
+////////////////////////////////////////////////////////////////
+
   this.updateWorldMatrix0 = function() {
     if (!parent_) {
       world_.set(local_);
@@ -191,6 +211,8 @@ function Transform()
 
     that.updateBoundingBox(true);
   }
+
+////////////////////////////////////////////////////////////////
 
   this.updateWorldMatrix = function(matrix, updateParentBBox) {
     tdl.fast.matrix4.mul(world_, matrix, local_);

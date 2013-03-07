@@ -3,16 +3,79 @@
   <head>
     <title>WebProtGL</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style type="text/css">
+#commands {
+ width: 100%;
+ padding-bottom: 2.5em;
+}
+
+.action {
+ background-color: #AACCBB;
+ cursor: pointer;
+ padding: 0.4em;
+ margin: 0.2em;
+ float: left;
+ box-shadow: 0.2em 0.2em 0.3em 0.1em #333333;
+ border-radius: 0.5em;
+}
+
+.action:hover {
+ box-shadow: 0.2em 0.2em 0.3em 0.1em #AAAAAA;
+}
+
+#popup {
+ top: 8em;
+ left: 4em;
+ padding: 2em;
+ position: absolute;
+ background-color: #AACCBB;
+ float: left;
+ box-shadow: 1em 1em 1.5em 0.5em #333333;
+ border-radius: 2em;
+ display: none;
+}
+    </style>
   </head>
   <body>
+    <script type="text/javascript" src="webglprotein.raw"></script>
+    <script type="text/javascript">
+function load_pdb(pdb_id) {
+ var popup = document.getElementById("popup");
+ popup.innerHTML = "Looking for protein <b>" + pdb_id + "</b>...";
+ popup.style.display = "block";
+ protgl.loadpdb(pdb_id,
+  function() { popup.innerHTML = "Protein <b>" + pdb_id + "</b> found, displaying..."; },
+  function() { popup.style.display = "none"; },
+  function(xhr) { alert("Problem retrieving protein" + pdb_id); popup.style.display = "none"; });
+}
+    </script>
     <div id="protgl">
       <div id="input">
-        <input id="pdb_input" title="PDB to load (ex. 2KXR):" size="6" value="2KXR" />
-        <input type="submit" title="Load PDB from RSCB" value="Load PDB" onclick="protgl.loadpdb()"/>
+        <input id="pdb_input" title="PDB to load (ex. 2KXR):" size="6" value="2KXR" onkeyup="
+if (event.keyCode == 13) {
+  load_pdb(this.value);
+}"/>
+        <input type="submit" title="Load PDB from RSCB" value="Load PDB" onclick="
+  var input = document.getElementById('pdb_input');
+  load_pdb(input.value)"/>
       </div>
-      <div id="hide" onclick="protgl.xxx()">Hide</div>
+      <div id="commands">
+       <div class="action" onclick="
+var visible = protgl.getScene().getVisibility();
+if (visible) {
+  this.innerHTML = 'Show';
+  protgl.show(false);
+} else {
+  this.innerHTML = 'Hide';
+  protgl.show(true);
+}">Hide</div>
+<!--
+       <div class="action" onclick="protgl.balls_sticks()">Balls &amp; Sticks</div>
+       <div class="action" onclick="this.innerHTML='Baby'">Hey</div>
+-->
+      </div>
+      <div id="popup">Popup</div>
       <canvas id='canvas-protgl' style="border: none;" width="500" height="500"></canvas>
-      <script type="text/javascript" src="webglprotein.js"></script>
       <script type="text/javascript"> var protgl = new WebGLProtein(); </script>
     </div>
   </body>

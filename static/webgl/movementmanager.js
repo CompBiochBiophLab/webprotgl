@@ -70,7 +70,12 @@ function CameraMovementManager(camera, stepSize)
         }
         break;
       default:
-        camera_.castRay([mouse.screenX, mouse.screenY]);
+        var context = camera_.getGLContext();
+        var w = context.viewportWidth;
+        var h = context.viewportHeight;
+        var x = mouse.clientX - context.canvas.offsetLeft;
+        var y = mouse.clientY - context.canvas.offsetTop;
+        camera_.castRay([(2. * x / w) - 1., 1. - (2. * y / h)]);
         break;
     }
   }

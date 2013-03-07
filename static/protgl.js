@@ -1,17 +1,14 @@
 //<script>
 
-function hide() {
-  gCamera.getGLScene().setVisibility(false);
-}
-
 function WebGLProtein()
 {
-  this.loadpdb = function() {
-    var input = document.getElementById("pdb_input");
-    //var url = "/protein/rcsb/pdb/"+input.value;
-    var url = "/webglprotein/protein/rcsb/pdb/"+input.value;
-    console.log("Looking for protein " + input.value);
-    $.get(url, pdbreader, "binary");
+  this.loadpdb = function(pdb_id, onSuccess, onFinished, onFailure) {
+    var url = "/webglprotein/protein/rcsb/pdb/"+pdb_id;
+    console.log("Looking for protein " + pdb_id);
+    $.ajax({ type: "GET", dataType: "binary", url: url, timeout: 60000,
+             success: function(data, textStatus) { onSuccess(); pdbreader(data); onFinished(); },
+             error: function(xhr, textStatus, errorThrown) { onFailure(xhr); }
+    });
   }
 
   //SNIP
@@ -127,12 +124,12 @@ function WebGLProtein()
   //SNAP
 }
 
-WebGLProtein.prototype.loadpdb = function() {
-  var input = document.getElementById("pdb_input");
-  var url = "/webglprotein/protein/rcsb/pdb/"+input.value;
-  console.log("Looking for protein " + input.value);
-  $.get(url, pdbreader, "binary");
+WebGLProtein.prototype.getScene = function() {
+  return gCamera.getGLScene();
+}
+
+WebGLProtein.prototype.show = function(visibility) {
+  gCamera.getGLScene().setVisibility(visibility);
 }
 
 window["WebGLProtein"] = WebGLProtein;
-WebGLProtein.prototype["loadpdb"] = WebGLProtein.prototype.loadpdb;
