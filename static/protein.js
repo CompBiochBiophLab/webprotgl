@@ -13,6 +13,13 @@ function AminoAcid()
     trf.translate([x, y, z]);
     trf.addShape(sphere);
     trf.setParameter("colour", createVectorParameter(colour));
+    trf.setParameter("radius", createFloatParameter(0.15));
+  }
+
+  this.addBonds = function(root, cylinder, prevAmino) {
+    var trf = root.addChild();
+    trf.addShape(cylinder);
+    trf.setParameter("radius", createFloatParameter(0.15));
   }
 
   this.getAtomInfo = function(index) {
@@ -375,14 +382,16 @@ function Chain()
 
 function Protein()
 {
-  var root_;
+  var sphereRoot_;
+  var cylinderRoot_;
 
   this.getBarycenter = function() {
-    return root_.getBoundingBox().getCenter();
+    return sphereRoot_.getBoundingBox().getCenter();
   }
 
-  this.parse = function(data, root, sphere) {
-    root_ = root.addChild();
+  this.parse = function(data, sphereRoot, sphere, cylinderRoot, cylinder) {
+    sphereRoot_ = sphereRoot; // Addchild?
+    cylinderRoot_ = cylinderRoot;
 
     // Make a buffer on the data
     var buffer = new jDataView(data);
@@ -410,12 +419,12 @@ function Protein()
       offset += 1;
       console.log("Type " + stype);
 
-      offset = this.__parseProtein(sid, buffer, offset, root_, sphere);
+      offset = this.__parseProtein(sid, buffer, offset, sphereRoot_, sphere, cylinderRoot_, cylinder);
       break;
     }
   }
 
-  this.__parseProtein = function(sid, buffer, offset, root, sphere) {
+  this.__parseProtein = function(sid, buffer, offset, sphereRoot, sphere, cylinderRoot, cylinder) {
     chain = new Chain();
     chains_[sid] = chain;
 
@@ -433,9 +442,10 @@ function Protein()
     console.log(totAtoms + " atoms");
 
     var sum = 0;
+    var prevAmino = null;
     for (var res = 0; res < totRes; ++res) {
       var amino = chain.addAminoAcid1(sequence[res]);
-      var trf = amino.prepareTransform(root);
+      var trf = amino.prepareTransform(sphereRoot);
 //      console.log(amino.getSize());
       for (var atom = 0; atom < amino.getSize(); ++atom) {
         var x = buffer.getFloat32(offset, true);
@@ -447,6 +457,9 @@ function Protein()
         amino.addAtom(x, y, z, trf, sphere, amino.getAtomInfo(atom));
         ++sum;
       }
+      var trf2 = cylinderRoot.addChild();
+      amino.addBonds(trf2, cylinder, prevAmino);
+      prevAmino = amino;
     }
     console.log(sum);
     return offset;

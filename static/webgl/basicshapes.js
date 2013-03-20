@@ -1,5 +1,57 @@
 //<script>
 
+function createGLOpenCylinder(gl, nDivCircle, nDivHeight)
+{
+  var iV = 8;
+  var nV = (nDivCircle * (nDivHeight + 1));
+  var iI = 3;
+  var nI = 2 * nDivCircle * nDivHeight;
+  var vertices = new Float32Array(iV * nV);
+  var indices = new Uint16Array(iI * nI);
+
+  for (var h = 0; h < nDivHeight; ++h) {
+    for (var a = 0; a < nDivCircle; ++a) {
+      var angle = Math.PI * 2. * (a) / (nDivCircle);
+      console.log("vert" + (iV * (h * nDivCircle + a)));
+      vertices[iV * (h * nDivCircle + a) + 0] = Math.cos(angle);
+      vertices[iV * (h * nDivCircle + a) + 1] = Math.sin(angle);
+      vertices[iV * (h * nDivCircle + a) + 2] = (h) / (nDivHeight - 1);
+      vertices[iV * (h * nDivCircle + a) + 3] = Math.cos(angle);
+      vertices[iV * (h * nDivCircle + a) + 4] = Math.sin(angle);
+      vertices[iV * (h * nDivCircle + a) + 5] = (h) / (nDivHeight - 1);
+      vertices[iV * (h * nDivCircle + a) + 6] = (a) / (nDivCircle);
+      vertices[iV * (h * nDivCircle + a) + 7] = (h) / (nDivHeight - 1);
+
+      if (h > 0) {
+        var i1 = nDivCircle * (h - 1) + a;
+        var i3 = nDivCircle * (h - 0) + a;
+        if (a == 0) {
+          var i2 = nDivCircle * (h + 0) - 1;
+          var i4 = nDivCircle * (h + 1) - 1;
+        } else {
+          var i2 = nDivCircle * (h - 1) + a - 1;
+          var i4 = nDivCircle * (h - 0) + a - 1;
+        }
+        console.log("inde" + (3 * (2 * nDivCircle * (h - 1) + 2 * a) + 0));
+        console.log(i1);
+        console.log(i2);
+        console.log(i3);
+        console.log(i4);
+        indices[3 * (2 * nDivCircle * (h - 1) + 2 * a) + 0] = i1;
+        indices[3 * (2 * nDivCircle * (h - 1) + 2 * a) + 1] = i2;
+        indices[3 * (2 * nDivCircle * (h - 1) + 2 * a) + 2] = i3;
+        indices[3 * (2 * nDivCircle * (h - 1) + 2 * a) + 3] = i2;
+        indices[3 * (2 * nDivCircle * (h - 1) + 2 * a) + 4] = i4;
+        indices[3 * (2 * nDivCircle * (h - 1) + 2 * a) + 5] = i3;
+      }
+    }
+  }
+  
+  return new Shape(gl, gl.TRIANGLES, vertices, indices, iV, nV, iI, nI);
+}
+
+////////////////////////////////////////////////////////////////
+
 function createGLSphere(gl, nIterations)
 {
   var iV = 8;

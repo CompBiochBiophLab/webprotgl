@@ -4,7 +4,6 @@ function Shader(gl)
 {
   var that = this;
   var progam_;
-  var level_;
   var gl_ = gl;
   var position_;
   var normal_;
@@ -45,7 +44,7 @@ params_["radius"] = createFloatParameter(1.);
   }
 
   this.bind = function() {
-    if (level_ >= 2 && program_) {
+    if (program_) {
       gl_.useProgram(program_);
       return true;
     }
@@ -59,32 +58,12 @@ params_["radius"] = createFloatParameter(1.);
 
   this.init = function(vertex, fragment) {
     program_ = gl_.createProgram();
-    level_ = 0;
-    $.get(vertex, readVertex);
-    $.get(fragment, readFragment);
-  }
-
-  readVertex = function(file) {
-    attachShader(program_, file, gl.VERTEX_SHADER);
-    ++level_;
+    attachShader(program_, vertex, gl.VERTEX_SHADER);
+    attachShader(program_, fragment, gl.FRAGMENT_SHADER);
     link();
   }
-
-  readFragment = function(file) {
-    attachShader(program_, file, gl.FRAGMENT_SHADER);
-    ++level_;
-    link();
-  }
-/*
-  readParams = function(file) {
-    ++level_;
-    link();
-  }
-  */
+  
   link = function() {
-    if (level_ < 2)
-      return;
-
     gl_.linkProgram(program_);
 
     if (!gl_.getProgramParameter(program_, gl_.LINK_STATUS)) {
@@ -97,11 +76,11 @@ params_["radius"] = createFloatParameter(1.);
     colour_   = gl_.getAttribLocation(program_, "attrColour");
 
     if (position_ >= 0)
-    gl_.enableVertexAttribArray(position_);
+      gl_.enableVertexAttribArray(position_);
     if (normal_ >= 0)
-    gl_.enableVertexAttribArray(normal_);
+      gl_.enableVertexAttribArray(normal_);
     if (colour_ >= 0)
-    gl_.enableVertexAttribArray(colour_);
+      gl_.enableVertexAttribArray(colour_);
   }
 
 ////////////////////////////////////////////////////////////////
@@ -124,11 +103,6 @@ params_["radius"] = createFloatParameter(1.);
         break;
     }
   }
-
-
-
-
-
 
 ////////////////////////////////////////////////////////////////
 

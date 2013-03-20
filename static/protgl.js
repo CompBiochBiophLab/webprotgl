@@ -67,10 +67,33 @@ function WebGLProtein()
       var canvas = document.getElementById("canvas-protgl");
       gCamera = new Camera(canvas);
       var mm = new MovementManager(gCamera);
+      
+      var elt = document.getElementById("shader_sphere_vertex");
+      var shader_sphere_vertex = elt.value;
+      elt.parentNode.removeChild(elt);
+      
+      elt = document.getElementById("shader_sphere_fragment");
+      var shader_sphere_fragment = elt.value;
+      elt.parentNode.removeChild(elt);
+      
+      elt = document.getElementById("shader_cylinder_vertex");
+      var shader_cylinder_vertex = elt.value;
+      elt.parentNode.removeChild(elt);
+      
+      elt = document.getElementById("shader_cylinder_fragment");
+      var shader_cylinder_fragment = elt.value;
+      elt.parentNode.removeChild(elt);
+      
 
-      gShader = new Shader(gCamera.getGLContext());
-      gShader.init("shaders/sphere.vertex", "shaders/sphere.fragment");
-      sphere_ = createGLSphere(gCamera.getGLContext(), 2); // 3);
+      sphereShader_ = new Shader(gCamera.getGLContext());
+      sphereShader_.init(shader_sphere_vertex, shader_sphere_fragment);
+      cylinderShader_ = new Shader(gCamera.getGLContext());
+      cylinderShader_.init(shader_cylinder_vertex, shader_cylinder_fragment);
+      cylinderShader_ = sphereShader_;//new Shader(gCamera.getGLContext());
+//      cylinderShader_.init("shaders/cylinder.vertex", "shaders/cylinder.fragment");
+      var refinements = 2; // 3;
+      sphere_ = createGLSphere(gCamera.getGLContext(), refinements);
+      cylinder_ = createGLOpenCylinder(gCamera.getGLContext(), Math.pow(2, refinements) * 4, 2);
       $.get("/webglprotein/protein/rcsb/pdb/2KXR", pdbreader, "binary");
     } catch (e) {
       alert(e);
@@ -82,13 +105,17 @@ function WebGLProtein()
     var root = gCamera.getGLScene();
     root.clear() // Replace with creating new child?
 
+    var sphereRoot = root.addChild();
+    sphereRoot.setShader(sphereShader_);
+    var cylinderRoot = root.addChild();
+    cylinderRoot.setShader(cylinderShader_);
+
     var protein = new Protein();
-    protein.parse(pdb, root, sphere_);
+    protein.parse(pdb, sphereRoot, sphere_, cylinderRoot, cylinder_);
     protein.setID("Asdf");
 
     protein.print();
 
-    root.setShader(gShader);
     gCamera.setTargetObject(protein);
 
     requestAnimationFrame = window.requestAnimationFrame;
@@ -114,6 +141,9 @@ function WebGLProtein()
   }
 
   var sphere_;
+  var sphereShader_;
+  var cylinder_;
+  var cylinderShader_;
   var isAnimating_ = false;
   //SNIP
   /*

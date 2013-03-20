@@ -57,8 +57,11 @@ function Camera(canvas)
     tdl.fast.addVector(dir, direction_, r);
     tdl.fast.addVector(dir, dir, u);
     
+    //console.log("Mou [" + mouse[0] + ", " + mouse[1] + "] " + tanHalfAperture_);
+    //console.log("GL  [" + gl_.viewportWidth + ", " + gl_.viewportHeight + "]");
+    //console.log("Pos [" + eye_[0] + ", " + eye_[1] + ", " + eye_[2] + "]");
+    //console.log("Dir [" + dir[0] + ", " + dir[1] + ", " + dir[2] + "]");
     return scene_.castRay([eye_, dir]);
-    //console.log("Vector [" + t[0] + ", " + t[1] + ", " + t[2] + "]");
     //rayDir = direction_ + tdl.fast.right_
   }
   

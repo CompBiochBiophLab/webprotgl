@@ -1,0 +1,27 @@
+attribute vec3 attrPosition;
+attribute vec3 attrNormal;
+attribute vec2 attrColour;
+
+uniform mat4 cameraMatrix;
+uniform mat4 worldMatrix;
+uniform vec3 eye;
+uniform mat3 inverseMatrix;
+uniform float radius;
+uniform vec4 colour;
+
+varying vec3 vNormal;
+varying vec4 col;
+varying vec3 poseye;
+varying float posdist;
+
+void main(void) {
+  vec4 intPos = worldMatrix * vec4(attrPosition * radius, 1.);
+  gl_Position = cameraMatrix * intPos;
+  vNormal = attrNormal;
+  col = colour;
+
+  poseye = eye - intPos.xyz;
+  posdist = dot(poseye, poseye);
+  poseye = normalize(poseye);
+}
+
