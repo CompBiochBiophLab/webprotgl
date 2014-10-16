@@ -89,7 +89,7 @@ function WebGLProtein()
       sphereShader_.init(shader_sphere_vertex, shader_sphere_fragment);
       cylinderShader_ = new Shader(gCamera.getGLContext());
       cylinderShader_.init(shader_cylinder_vertex, shader_cylinder_fragment);
-      cylinderShader_ = sphereShader_;//new Shader(gCamera.getGLContext());
+//       cylinderShader_ = sphereShader_;//new Shader(gCamera.getGLContext());
 //      cylinderShader_.init("shaders/cylinder.vertex", "shaders/cylinder.fragment");
       var refinements = 2; // 3;
       sphere_ = createGLSphere(gCamera.getGLContext(), refinements);

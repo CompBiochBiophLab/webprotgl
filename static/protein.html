@@ -107,7 +107,7 @@ varying vec3 poseye;
 varying float posdist;
 
 void main(void) {
-  vec4 intPos = worldMatrix * vec4(attrPosition * radius, 1.);
+  vec4 intPos = worldMatrix * vec4(attrPosition.xy * radius, attrPosition.z, 1.);
   gl_Position = cameraMatrix * intPos;
   vNormal = attrNormal;
   col = colour;

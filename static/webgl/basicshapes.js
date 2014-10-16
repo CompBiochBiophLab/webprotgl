@@ -12,7 +12,6 @@ function createGLOpenCylinder(gl, nDivCircle, nDivHeight)
   for (var h = 0; h < nDivHeight; ++h) {
     for (var a = 0; a < nDivCircle; ++a) {
       var angle = Math.PI * 2. * (a) / (nDivCircle);
-      console.log("vert" + (iV * (h * nDivCircle + a)));
       vertices[iV * (h * nDivCircle + a) + 0] = Math.cos(angle);
       vertices[iV * (h * nDivCircle + a) + 1] = Math.sin(angle);
       vertices[iV * (h * nDivCircle + a) + 2] = (h) / (nDivHeight - 1);
@@ -32,11 +31,6 @@ function createGLOpenCylinder(gl, nDivCircle, nDivHeight)
           var i2 = nDivCircle * (h - 1) + a - 1;
           var i4 = nDivCircle * (h - 0) + a - 1;
         }
-        console.log("inde" + (3 * (2 * nDivCircle * (h - 1) + 2 * a) + 0));
-        console.log(i1);
-        console.log(i2);
-        console.log(i3);
-        console.log(i4);
         indices[3 * (2 * nDivCircle * (h - 1) + 2 * a) + 0] = i1;
         indices[3 * (2 * nDivCircle * (h - 1) + 2 * a) + 1] = i2;
         indices[3 * (2 * nDivCircle * (h - 1) + 2 * a) + 2] = i3;

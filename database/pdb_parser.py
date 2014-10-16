@@ -204,21 +204,27 @@ class PDBParser:
       for seq_id in sequences:
         (c_type, chain, nonstd, tot_atoms) = sequences[seq_id]
         tot_res = len(chain)
-        # chain ID, chain type, # residues
-        buf.write(pack("<cBH{0}sl".format(tot_res),
-                       seq_id, c_type, tot_res, chain, tot_atoms))
+        # chain ID, chain type, # residues, chain, total atoms
+        buf.write(pack("<cBH{0}s".format(tot_res),
+                       seq_id, c_type, tot_res, chain))
+        # heterogens
+        buf.write(pack("<H", len(nonstd))
+        for position in sorted(nonstd.keys()): # 400: ('ATP', 31)
+          (hetname, hetatoms) = nonstd[position]
+          buf.write(pack("<H{0}sB".format(len(hetname)), len(hetname), hetname, hetatoms))
+        # Total atoms to read
+        buf.write(pack("<l", tot_atoms))
         aminos = models[modkey][seq_id]
-        xxx = 0
         for i in range(0, tot_res):
           amino = chain[i]
           aminolen = self.__123[amino][1]
-          xxx += aminolen
           if not i in aminos:
             # Fill with emtpy values
             for j in range(0, aminolen):
               buf.write(pack("fff", nan, nan, nan))
           else:
             atoms = aminos[i]
+            # Fill with actual values, or empty
             for j in range(0, aminolen):
               if not j in atoms:
                 buf.write(pack("fff", nan, nan, nan))

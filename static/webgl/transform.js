@@ -86,6 +86,12 @@ function Transform()
 
 ////////////////////////////////////////////////////////////////
 
+  this.getChild = function(index) {
+    return children_[index];
+  }
+  
+////////////////////////////////////////////////////////////////
+
   this.getShader = function() {
     if (shader_)
       return shader_;
@@ -145,6 +151,19 @@ function Transform()
     for (i in children_) {
       children_[i].display(camera, eye, gl);
     }
+  }
+  
+////////////////////////////////////////////////////////////////
+
+  this.multiply = function(coords) {
+    var w = 1.;
+    if (coords.length > 3)
+      w = coords[3];
+    
+    var pos = [coords[0], coords[1], coords[2], w];
+    var val = [0., 0., 0., 0.];
+    tdl.fast.columnMajor.mulMatrix4Vector(val, world_, pos);
+    return val;
   }
 
 ////////////////////////////////////////////////////////////////
