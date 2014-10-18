@@ -2,3 +2,8 @@
 database.sqlite
 static/webglprotein.raw
 *~
+.idea/
+
+testing/
+preprod/
+production/

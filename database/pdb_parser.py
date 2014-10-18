@@ -5,7 +5,7 @@ from io import BytesIO
 from struct import *
 
 class PDBParser:
-  MIMETYPE = "text/pdb"
+  MIMETYPE = "pdb"
   __PROTEIN = 0
   __DNA     = 1
   __RNA     = 2
@@ -204,14 +204,14 @@ class PDBParser:
       for seq_id in sequences:
         (c_type, chain, nonstd, tot_atoms) = sequences[seq_id]
         tot_res = len(chain)
-        # chain ID, chain type, # residues, chain, total atoms
+        # chain ID, chain type, # residues, chain
         buf.write(pack("<cBH{0}s".format(tot_res),
-                       seq_id, c_type, tot_res, chain))
+                       seq_id.encode("UTF-8"), c_type, tot_res, chain.encode("UTF-8")))
         # heterogens
-        buf.write(pack("<H", len(nonstd))
+        buf.write(pack("<H", len(nonstd)))
         for position in sorted(nonstd.keys()): # 400: ('ATP', 31)
           (hetname, hetatoms) = nonstd[position]
-          buf.write(pack("<H{0}sB".format(len(hetname)), len(hetname), hetname, hetatoms))
+          buf.write(pack("<H{0}sB".format(len(hetname)), len(hetname), hetname.encode("UTF-8"), hetatoms))
         # Total atoms to read
         buf.write(pack("<l", tot_atoms))
         aminos = models[modkey][seq_id]

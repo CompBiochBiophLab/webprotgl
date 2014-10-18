@@ -1,49 +1,50 @@
-#! /usr/bin/python
+""" Serve a specific protein """
 
-from database.database import Database
-from database.pdb_parser import PDBParser
-from traceback import print_exc
+import logging
+import mimetypes
+import os
+import traceback
 
-class ProteinServer():
+from server import post_parser, responder
+from server.protein_downloader import ProteinGetter
+
+class Protein(object):
   def __init__(self):
-    self.__proteins = dict()
+    pass
 
-  def serve(self, env, start_response):
-    path = env["PATH_INFO"].split("/")
-    status = "404 - Not found"
-    mimetype = "text/html"
-    body = "<html><body><h1>404 - Not found</h1></body></html>"
+  def serve(self, env, path, user, database):
+    response = responder.Response()
 
-    try:
-      self.__db = Database()
-      self.__db.load()
-      server = path[2]
-      basetype = path[3]
-      protname = path[4]
+    server = path[1]
+    format = path[2]
+    s_name = path[3]
+    protein_db = database.proteins()
 
-      # Find source server
-      source = self.__db.find_source(server, basetype)
-      if source:
-        protein = self.__db.get_protein_info(source,  protname)
-        if protein:
-          model = None
-          for mid in protein.get_models():
-            model = self.__db.load_model(protein, mid)
-            break
-          if model:
-            status = "200 - OK"
-            mimetype = "application/octet-stream"
-            body = model
-          else:
-            status = "500 - Internal Server Error"
-            body = "<html><body><h1>500 - Internal server error</h1></body></html>"
-    except IOError as e:
-      print_exc()
-    except Exception as e:
-      status = "500 - Internal Server Error"
-      body = "<html><body><h1>500 - Internal server error</h1></body></html>"
-      print_exc()
-    finally:
-      start_response(status, [("Content-Type", mimetype), ("Content-Length", str(len(body)))])
-      return [body]
+    source = protein_db.find_source(server, format)
+    if not source:
+      response.set_status_code(response.NOT_FOUND)
+      return response
 
+    protein = protein_db.get_protein_info(source, s_name)
+    if not protein:
+      # Try downloading a new one!
+      if source.is_private():
+        response.set_status_code(response.NOT_FOUND)
+        return response
+
+      # Return processing for now; we've queued the request !?
+      getter = ProteinGetter(database, source, s_name)
+      getter.start()
+      response.set_status_code(response.PROCESSING)
+      return response
+
+    if protein.is_processing():
+      response.set_status_code(response.PROCESSING)
+      return response
+    model = None
+    for mid in protein.get_models():
+      model = protein_db.load_model(protein, mid)
+      break
+    if model:
+      response.set_body(model, "application/octet-stream")
+    return response

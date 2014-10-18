@@ -1,6 +1,6 @@
 
 from urllib.request import urlopen
-from .pdb_parser import PDBParser
+from database.pdb_parser import PDBParser
 
 class Source:
   def __init__(self, id = -1, name = "", mimetype="", url="", description=""):
@@ -39,3 +39,5 @@ class Source:
 
     return self.__url.format(protein_name)
 
+  def is_private(self):
+    return self.__name == "private"

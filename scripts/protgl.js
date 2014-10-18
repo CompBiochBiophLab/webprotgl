@@ -44,7 +44,7 @@ function WebGLProtein()
     "webgl/boundingbox.js",
     "webgl/camera.js",
     "webgl/fast.js",
-    "webgl/mouse.js",
+    /*"webgl/mouse.js",*/
     "webgl/shader.js",
     "webgl/shaderparameter.js",
     "webgl/shape.js",
