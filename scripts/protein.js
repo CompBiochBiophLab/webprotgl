@@ -457,6 +457,21 @@ function Protein()
     offset += totRes;
     console.log(sequence);
 
+    // Total heterogens
+    var totHetero = buffer.getUint16(offset, true);
+    offset += 2;
+    console.log(totHetero + " heterogens");
+    for (var het = 0; het < totHetero; ++het)
+    {
+      var hetNameLen = buffer.getUint16(offset, true);
+      offset += 2;
+      var hetName = buffer.getString(hetNameLen, offset);
+      offset += hetNameLen;
+      var hetAtoms = buffer.getUint8(offset);
+      offset += 1;
+      console.log(hetName + " with " + hetAtoms + " atoms");
+    }
+
     // Total atoms
     var totAtoms = buffer.getInt32(offset, true);
     offset += 4;

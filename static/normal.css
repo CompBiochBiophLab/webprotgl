@@ -1,0 +1,31 @@
+
+#commands {
+ width: 100%;
+ padding-bottom: 2.5em;
+}
+
+.action {
+ background-color: #AACCBB;
+ cursor: pointer;
+ padding: 0.4em;
+ margin: 0.2em;
+ float: left;
+ box-shadow: 0.2em 0.2em 0.3em 0.1em #333333;
+ border-radius: 0.5em;
+}
+
+.action:hover {
+ box-shadow: 0.2em 0.2em 0.3em 0.1em #AAAAAA;
+}
+
+#popup {
+ top: 8em;
+ left: 4em;
+ padding: 2em;
+ position: absolute;
+ background-color: #AACCBB;
+ float: left;
+ box-shadow: 1em 1em 1.5em 0.5em #333333;
+ border-radius: 2em;
+ display: none;
+}

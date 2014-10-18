@@ -41,6 +41,8 @@ class ProteinDB(object):
       raise Exception("Not a source")
 
     name = protein_name.lower()
+    print(source.get_id())
+    print(protein_name)
 
     # Search in DB
     cursor = self.__database.cursor()

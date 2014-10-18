@@ -2,9 +2,8 @@
 
 function WebGLProtein()
 {
-  this.loadpdb = function(pdb_id, onSuccess, onFinished, onFailure) {
-    var url = "/webglprotein/protein/rcsb/pdb/"+pdb_id;
-    console.log("Looking for protein " + pdb_id);
+  this.loadpdb = function(url, onSuccess, onFinished, onFailure) {
+    console.log("Looking for protein " + url);
     $.ajax({ type: "GET", dataType: "binary", url: url, timeout: 60000,
              success: function(data, textStatus) { onSuccess(); pdbreader(data); onFinished(); },
              error: function(xhr, textStatus, errorThrown) { onFailure(xhr); }
@@ -39,20 +38,20 @@ function WebGLProtein()
   }
 
   var allScripts_ = [
-    "jquery_binary.js",
-    "base.js",
-    "webgl/boundingbox.js",
-    "webgl/camera.js",
-    "webgl/fast.js",
-    /*"webgl/mouse.js",*/
-    "webgl/shader.js",
-    "webgl/shaderparameter.js",
-    "webgl/shape.js",
-    "webgl/basicshapes.js",
-    "webgl/transform.js",
-    "webgl/movementmanager.js",
-    "jdataview.js",
-    "protein.js"];
+    "/static/jquery_binary.js",
+    "/static/base.js",
+    "/static/webgl/boundingbox.js",
+    "/static/webgl/camera.js",
+    "/static/webgl/fast.js",
+    /*"/static/webgl/mouse.js",*/
+    "/static/webgl/shader.js",
+    "/static/webgl/shaderparameter.js",
+    "/static/webgl/shape.js",
+    "/static/webgl/basicshapes.js",
+    "/static/webgl/transform.js",
+    "/static/webgl/movementmanager.js",
+    "/static/jdataview.js",
+    "/static/protein.js"];
   var totalScripts_ = allScripts_.length;
 
   for (script in allScripts_)
@@ -94,7 +93,7 @@ function WebGLProtein()
       var refinements = 2; // 3;
       sphere_ = createGLSphere(gCamera.getGLContext(), refinements);
       cylinder_ = createGLOpenCylinder(gCamera.getGLContext(), Math.pow(2, refinements) * 4, 2);
-      $.get("/webglprotein/protein/rcsb/pdb/2KXR", pdbreader, "binary");
+      $.get(initial_protein(), pdbreader, "binary");
     } catch (e) {
       alert(e);
     }

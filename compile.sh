@@ -36,7 +36,7 @@ if not path.exists(root):
 # 
 # Folders / Files to copy
 paths = ["__init__.py", "runserver.py", \
-  "database", "server", "static"]
+  "database", "server", "static", "templates"]
 for source in paths:
   try:
     (s, d) = source
