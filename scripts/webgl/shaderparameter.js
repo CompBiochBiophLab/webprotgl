@@ -17,6 +17,10 @@ function ShaderParameter(type, value)
         break;
     }
   }
+
+  this.getValue = function() {
+    return value_;
+  }
 }
 
 function createFloatParameter(value) {

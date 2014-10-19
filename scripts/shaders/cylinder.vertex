@@ -8,8 +8,8 @@ uniform vec3 eye;
 uniform mat3 inverseMatrix;
 uniform float radius;
 uniform float length;
-uniform vec4 colour;
-//uniform vec3 dir;
+uniform vec4 colourA;
+uniform vec4 colourB;
 
 varying vec3 vNormal;
 varying vec4 col;
@@ -17,11 +17,18 @@ varying vec3 poseye;
 varying float posdist;
 
 void main(void) {
-  vec3 scaled = vec3(attrPosition.xy * radius, attrPosition.z * length);
+  float new_z = attrPosition.z;
+  if (new_z < 0.5) {
+    col = colourA;
+    new_z = new_z * 1.5;
+  } else {
+    col = colourB;
+    new_z = new_z * 1.5 - 0.5;
+  }
+  vec3 scaled = vec3(attrPosition.xy * radius, new_z * length);
   vec4 intPos = worldMatrix * vec4(scaled, 1.);
   gl_Position = cameraMatrix * intPos;
-  vNormal = attrNormal;
-  col = colour;
+  vNormal = (worldMatrix * vec4(attrNormal, 0.)).xyz;
 
   poseye = eye - intPos.xyz;
   posdist = dot(poseye, poseye);

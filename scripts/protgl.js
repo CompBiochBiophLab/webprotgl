@@ -83,7 +83,7 @@ function WebGLProtein()
 
     cylinderShader_ = new Shader(gCamera.getGLContext());
     cylinderShader_.init(shader["cylinder"]["v"], shader["cylinder"]["f"]);
-    cylinder_ = createGLOpenCylinder(gCamera.getGLContext(), Math.pow(2, refinements) * 4, 2);
+    cylinder_ = createGLOpenCylinder(gCamera.getGLContext(), Math.pow(2, refinements) * 4, 3);
 
     $.get(initial_protein(), pdbreader, "binary");
   }

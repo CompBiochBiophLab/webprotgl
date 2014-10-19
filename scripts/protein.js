@@ -13,7 +13,7 @@ function AminoAcid()
     trf.translate([x, y, z]);
     trf.addShape(sphere);
     trf.setParameter("colour", createVectorParameter(colour));
-    trf.setParameter("radius", createFloatParameter(1.));
+    trf.setParameter("radius", createFloatParameter(0.5));
   }
 
   this.addBonds = function(root, cylinder, prevAmino, atoms) {
@@ -24,13 +24,34 @@ function AminoAcid()
       atom1 = atoms.getChild(bonds[bond][1]);
       var p0 = atom0.multiply(zero);
       var p1 = atom1.multiply(zero);
-      var dir = p1 - p0;
-      console.log(p0 + " -> " + p1 + " = " + dir);
+      var dir = [0., 0., 1.];
+      tdl.fast.subVector(dir, p1, p0);
+      var dist = Math.sqrt(tdl.fast.dot(dir, dir));
       var trf = root.addChild();
       trf.addShape(cylinder);
-      trf.setParameter("radius", createFloatParameter(1.));
-      trf.setParameter("length", createFloatParameter(2.));
+      colA = atom0.findParameter("colour").getValue();
+      colB = atom1.findParameter("colour").getValue();
+      console.log(colA);
+      console.log(colB);
+      trf.setParameter("colourA", createVectorParameter(colA));
+      trf.setParameter("colourB", createVectorParameter(colB));
+      trf.setParameter("radius", createFloatParameter(0.5));
+      trf.setParameter("length", createFloatParameter(dist));
+      // Translate to position
       trf.translate(p0);
+      // Rotate
+      if (dir[0] == 0. && dir[1] == 0.)
+      {
+        if (dir[2] < 0.)
+          trf.rotate([1., 0., 0.], Math.PI);
+      } else {
+        var dir_n = dir;
+        tdl.fast.divVectorScalar(dir_n, dir, dist);
+        var axis = [0., 1., 0.];
+        tdl.fast.cross(axis, [0., 0., 1.], dir_n);
+        var angle = Math.acos(tdl.fast.dot([0., 0., 1.], dir_n));
+        trf.rotate(axis, angle);
+      }
         trf.setParameter("p0", createVec3Parameter(p0));
         trf.setParameter("p1", createVec3Parameter(p1));
      }

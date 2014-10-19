@@ -2,19 +2,21 @@
 
 function Shader(gl)
 {
-  var that = this;
-  var progam_;
+  var this_ = this;
+  var program_;
   var gl_ = gl;
   var position_;
   var normal_;
   var colour_;
   var params_ = {};
   var locations_ = {};
-
+/*
 params_["colour"] = createVec4Parameter(1., 0.5, 0.2, 0.3);
 params_["radius"] = createFloatParameter(1.);
+*/
+////////////////////////////////////////////////////////////////
 
-  attachShader = function(program, source, type)
+  this.attachShader = function(source, type)
   {
     var shader = gl_.createShader(type);
     gl_.shaderSource(shader, source);
@@ -23,10 +25,12 @@ params_["radius"] = createFloatParameter(1.);
     if (!gl_.getShaderParameter(shader, gl_.COMPILE_STATUS))
       throw new Error(gl_.getShaderInfoLog(shader));
 
-    gl_.attachShader(program, shader);
+    gl_.attachShader(program_, shader);
   }
 
-  findLocation = function(name, isAttribute) {
+////////////////////////////////////////////////////////////////
+
+  this.findLocation = function(name, isAttribute) {
     var item = locations_[name];
     if (item)
       return item;
@@ -43,6 +47,8 @@ params_["radius"] = createFloatParameter(1.);
     locations_[name] = loc;
   }
 
+////////////////////////////////////////////////////////////////
+
   this.bind = function() {
     if (program_) {
       gl_.useProgram(program_);
@@ -52,18 +58,24 @@ params_["radius"] = createFloatParameter(1.);
     return false;
   }
 
+////////////////////////////////////////////////////////////////
+
   this.getParameters = function() {
     return params_;
   }
 
+////////////////////////////////////////////////////////////////
+
   this.init = function(vertex, fragment) {
     program_ = gl_.createProgram();
-    attachShader(program_, vertex, gl.VERTEX_SHADER);
-    attachShader(program_, fragment, gl.FRAGMENT_SHADER);
-    link();
+    this_.attachShader(vertex, gl.VERTEX_SHADER);
+    this_.attachShader(fragment, gl.FRAGMENT_SHADER);
+    this_.link();
   }
-  
-  link = function() {
+
+////////////////////////////////////////////////////////////////
+
+  this.link = function() {
     gl_.linkProgram(program_);
 
     if (!gl_.getProgramParameter(program_, gl_.LINK_STATUS)) {
@@ -86,7 +98,7 @@ params_["radius"] = createFloatParameter(1.);
 ////////////////////////////////////////////////////////////////
 
   this.setUniform = function(name, value) {
-    gl_.uniform1f(findLocation(name), value);
+    gl_.uniform1f(this_.findLocation(name), value);
   }
 
 ////////////////////////////////////////////////////////////////
@@ -94,10 +106,10 @@ params_["radius"] = createFloatParameter(1.);
   this.setUniformVector = function(name, value) {
     switch(value.length) {
       case 3:
-        gl_.uniform3fv(findLocation(name), value);
+        gl_.uniform3fv(this_.findLocation(name), value);
         break;
       case 4:
-        gl_.uniform4fv(findLocation(name), value);
+        gl_.uniform4fv(this_.findLocation(name), value);
         break;
       default:
         break;

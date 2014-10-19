@@ -2,7 +2,7 @@
 
 function Transform()
 {
-  var that = this;
+  var this_ = this;
   var bbox_ = new BBox();
   var visible_ = true;
   var selectable_ = true;
@@ -20,7 +20,7 @@ function Transform()
 
   this.addChild = function() {
     var child = new Transform();
-    child.setParent(that);
+    child.setParent(this_);
     child.updateWorldMatrix(world_, false);
     children_.push(child);
     return child;
@@ -99,6 +99,7 @@ function Transform()
     if (parent_)
       return parent_.getShader();
 
+    console.log("none");
     throw new Error("No shader in tree!");
   }
 
@@ -129,10 +130,18 @@ function Transform()
       // TODO Bind more parameters if necessary...
       var parameters = shader.getParameters();
       for (p in parameters) {
-        var x = that.findParameter(p);
+        var x = this_.findParameter(p);
         if (!x)
           x = parameters[p];
         x.bind(shader, p);
+      }
+      for (p in params_) {
+        if (!(p in parameters)) {
+          var x = this_.findParameter(p);
+          if (!x)
+            x = parameters[p];
+          x.bind(shader, p);
+        }
       }
 
       for (i in shapes_) {
@@ -192,9 +201,16 @@ function Transform()
 
 ////////////////////////////////////////////////////////////////
 
+  this.rotate = function(axis, angle) {
+    local_ = tdl.fast.matrix4.axisRotate(local_, axis, angle);
+    this_.updateWorldMatrix0();
+  }
+
+////////////////////////////////////////////////////////////////
+
   this.translate = function(position) {
     local_ = tdl.fast.matrix4.translate(local_, position);
-    that.updateWorldMatrix0();
+    this_.updateWorldMatrix0();
   }
 
 ////////////////////////////////////////////////////////////////
@@ -228,7 +244,7 @@ function Transform()
     for (i in children_)
       children_[i].updateWorldMatrix(world_, false);
 
-    that.updateBoundingBox(true);
+    this_.updateBoundingBox(true);
   }
 
 ////////////////////////////////////////////////////////////////
@@ -239,6 +255,6 @@ function Transform()
       children_[child].updateWorldMatrix(world_, false);
     }
 
-    that.updateBoundingBox(updateParentBBox);
+    this_.updateBoundingBox(updateParentBBox);
   }
 }
