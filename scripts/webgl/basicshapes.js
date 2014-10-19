@@ -12,12 +12,15 @@ function createGLOpenCylinder(gl, nDivCircle, nDivHeight)
   for (var h = 0; h < nDivHeight; ++h) {
     for (var a = 0; a < nDivCircle; ++a) {
       var angle = Math.PI * 2. * (a) / (nDivCircle);
+      // Position
       vertices[iV * (h * nDivCircle + a) + 0] = Math.cos(angle);
       vertices[iV * (h * nDivCircle + a) + 1] = Math.sin(angle);
       vertices[iV * (h * nDivCircle + a) + 2] = (h) / (nDivHeight - 1);
+      // Normal
       vertices[iV * (h * nDivCircle + a) + 3] = Math.cos(angle);
       vertices[iV * (h * nDivCircle + a) + 4] = Math.sin(angle);
-      vertices[iV * (h * nDivCircle + a) + 5] = (h) / (nDivHeight - 1);
+      vertices[iV * (h * nDivCircle + a) + 5] = 0.;
+      // Texture
       vertices[iV * (h * nDivCircle + a) + 6] = (a) / (nDivCircle);
       vertices[iV * (h * nDivCircle + a) + 7] = (h) / (nDivHeight - 1);
 

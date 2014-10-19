@@ -10,10 +10,7 @@ function Shader(gl)
   var colour_;
   var params_ = {};
   var locations_ = {};
-/*
-params_["colour"] = createVec4Parameter(1., 0.5, 0.2, 0.3);
-params_["radius"] = createFloatParameter(1.);
-*/
+
 ////////////////////////////////////////////////////////////////
 
   this.attachShader = function(source, type)

@@ -149,7 +149,7 @@ function Transform()
 //        gl.bindBuffer(gl.ARRAY_BUFFER, shapes_[i].getVertices());
 
         shader.bindPositions(3, shapes_[i].getBufferStride(), 0);
-        shader.bindNormals(3, shapes_[i].getBufferStride(), 0);
+        shader.bindNormals(3, shapes_[i].getBufferStride(), 12);
         shader.bindColours(2, shapes_[i].getBufferStride(), 24);
 //        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shapes_[i].getIndices());
 

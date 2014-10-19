@@ -2,14 +2,13 @@
   precision highp float;
 #endif
 
-varying vec3 vNormal;
+varying vec3 normal;
 varying vec4 col;
-varying vec3 poseye;
-varying float posdist;
+varying vec3 to_eye;
 
 void main(void) {
   // Intensity of diffuse light
-  float i = dot(poseye, vNormal);
+  float i = dot(to_eye, normal);
   if (i < -1e-3)
     discard;
   vec4 cc = vec4(i * col.rgb, 1.);
