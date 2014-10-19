@@ -149,7 +149,7 @@ with open(os.path.join(root, "static", "shaders.json"), "w") as output:
 # subprocess.call(["chmod", "777", backup])
 
 # Create log file
-logfile = path.join(root, "see.log")
+logfile = path.join(root, "webglprotein.log")
 subprocess.call(["touch", logfile])
 subprocess.call(["chmod", "666", logfile])
 
