@@ -76,7 +76,8 @@ if root == "testing":
     shutil.copy(source, dest)
 else:
   # Concatenate files
-  with open(os.path.join(root, "static", js_out), "w") as destination:
+  js_temp = os.path.abspath(os.path.join("scripts", "js.temp"))
+  with open(js_temp, "w") as destination:
     for script in js_in:
       source = os.path.join("scripts", script)
       shutil.copyfileobj(open(source, "r"), destination)
@@ -88,12 +89,20 @@ else:
       contents = snipsnap.read()
       destination.write(rx_snipsnap.sub("", contents))
   destination.close()
-  # TODO: uglify
-#export PATH="$PATH:/home/jrenggli/prog/3rdparty/UglifyJS/bin"
 
-#uglifyjs -o $FILE_FINAL $FILE_OUT
+  final = os.path.abspath(os.path.join(root, "static", js_out))
+  uglipath = os.path.abspath(os.path.join("scripts", "uglify", "bin"))
+  print(uglipath)
 
-#cat static/index.html | sed 's/protgl.js/webglprotein.js/g' > static/protein.html
+  new_env = os.environ
+  new_env["PATH"] += ":"+uglipath
+  exec = subprocess.Popen(["uglifyjs", "-o", final, js_temp], \
+    cwd=uglipath, env=new_env)
+  exec.wait()
+
+  if exec.returncode != 0:
+    print("Failed to uglify my js!")
+    exit(0)
 
 print("Updating shaders") # -> shaders.json
 with open(os.path.join(root, "static", "shaders.json"), "w") as output:

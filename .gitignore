@@ -1,8 +1,7 @@
 *.pyc
-database.sqlite
-static/webglprotein.raw
-*~
 .idea/
+
+scripts/js.temp
 
 testing/
 preprod/
