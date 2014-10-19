@@ -67,7 +67,7 @@ params_["radius"] = createFloatParameter(1.);
     gl_.linkProgram(program_);
 
     if (!gl_.getProgramParameter(program_, gl_.LINK_STATUS)) {
-      throw new Error(gl_.getProgtamInfoLog(program_));
+      throw new Error(gl_.getProgramInfoLog(program_));
     }
 
     gl_.useProgram(program_);

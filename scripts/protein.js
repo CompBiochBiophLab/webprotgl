@@ -13,24 +13,26 @@ function AminoAcid()
     trf.translate([x, y, z]);
     trf.addShape(sphere);
     trf.setParameter("colour", createVectorParameter(colour));
-    trf.setParameter("radius", createFloatParameter(0.15));
+    trf.setParameter("radius", createFloatParameter(1.));
   }
 
   this.addBonds = function(root, cylinder, prevAmino, atoms) {
     var zero = [0., 0., 0.];
     bonds = this.getBonds();
-//     console.log(bonds);
-     for (var bond = 0; bond < bonds.length; ++bond) {
-       atom0 = atoms.getChild(bonds[bond][0]);
-       atom1 = atoms.getChild(bonds[bond][1]);
-       var p0 = atom0.multiply(zero);
-       var p1 = atom1.multiply(zero);
-       var trf = root.addChild();
-       trf.addShape(cylinder);
-       trf.setParameter("radius", createFloatParameter(0.15));
-       trf.translate(p0);
-//        trf.setParameter("p0", createVec3Parameter(p0));
-//        trf.setParameter("p1", createVec3Parameter(p1));
+    for (var bond = 0; bond < bonds.length; ++bond) {
+      atom0 = atoms.getChild(bonds[bond][0]);
+      atom1 = atoms.getChild(bonds[bond][1]);
+      var p0 = atom0.multiply(zero);
+      var p1 = atom1.multiply(zero);
+      var dir = p1 - p0;
+      console.log(p0 + " -> " + p1 + " = " + dir);
+      var trf = root.addChild();
+      trf.addShape(cylinder);
+      trf.setParameter("radius", createFloatParameter(1.));
+      trf.setParameter("length", createFloatParameter(2.));
+      trf.translate(p0);
+        trf.setParameter("p0", createVec3Parameter(p0));
+        trf.setParameter("p1", createVec3Parameter(p1));
      }
     var position = atoms.getChild(0).multiply(zero);
 //     console.log(position);

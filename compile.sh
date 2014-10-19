@@ -2,6 +2,7 @@
 
 from os import fchmod, makedirs, path
 
+import json
 import os
 import pickle
 import re
@@ -54,6 +55,7 @@ for source in paths:
     shutil.copytree(source, dest)
 
 # Update static files
+print("Updating javascript")
 js_in = ["jquery_binary.js", "base.js", \
   "webgl/boundingbox.js", "webgl/camera.js", "webgl/fast.js", \
   "webgl/shader.js", "webgl/shaderparameter.js", "webgl/shape.js", \
@@ -92,6 +94,31 @@ else:
 #uglifyjs -o $FILE_FINAL $FILE_OUT
 
 #cat static/index.html | sed 's/protgl.js/webglprotein.js/g' > static/protein.html
+
+print("Updating shaders") # -> shaders.json
+with open(os.path.join(root, "static", "shaders.json"), "w") as output:
+  shaders = dict()
+  shad_path = os.path.join("scripts", "shaders")
+  for file in os.listdir(shad_path):
+    (name, ext) = os.path.splitext(file)
+    typ = ""
+    tuple = dict()
+    if name in shaders:
+      tuple = shaders[name]
+    if (ext == ".fragment"):
+      typ = "f"
+    elif ext == ".vertex":
+      typ = "v"
+    if not typ:
+      continue
+    with open(os.path.join(shad_path, file)) as value:
+      tuple[typ] = value.read()
+    shaders[name] = tuple
+  for key in shaders:
+    tuple = shaders[key]
+    if not "f" in tuple or not "v" in tuple:
+      del shaders[key]
+  json.dump(shaders, output)
 
 # # Update CSS files
 # normal = "static/normal.css"

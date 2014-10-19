@@ -66,37 +66,26 @@ function WebGLProtein()
       var canvas = document.getElementById("canvas-protgl");
       gCamera = new Camera(canvas);
       var mm = new MovementManager(gCamera);
-      
-      var elt = document.getElementById("shader_sphere_vertex");
-      var shader_sphere_vertex = elt.value;
-      elt.parentNode.removeChild(elt);
-      
-      elt = document.getElementById("shader_sphere_fragment");
-      var shader_sphere_fragment = elt.value;
-      elt.parentNode.removeChild(elt);
-      
-      elt = document.getElementById("shader_cylinder_vertex");
-      var shader_cylinder_vertex = elt.value;
-      elt.parentNode.removeChild(elt);
-      
-      elt = document.getElementById("shader_cylinder_fragment");
-      var shader_cylinder_fragment = elt.value;
-      elt.parentNode.removeChild(elt);
-      
 
-      sphereShader_ = new Shader(gCamera.getGLContext());
-      sphereShader_.init(shader_sphere_vertex, shader_sphere_fragment);
-      cylinderShader_ = new Shader(gCamera.getGLContext());
-      cylinderShader_.init(shader_cylinder_vertex, shader_cylinder_fragment);
-//       cylinderShader_ = sphereShader_;//new Shader(gCamera.getGLContext());
-//      cylinderShader_.init("shaders/cylinder.vertex", "shaders/cylinder.fragment");
-      var refinements = 2; // 3;
-      sphere_ = createGLSphere(gCamera.getGLContext(), refinements);
-      cylinder_ = createGLOpenCylinder(gCamera.getGLContext(), Math.pow(2, refinements) * 4, 2);
-      $.get(initial_protein(), pdbreader, "binary");
+      // Load the shaders before continuing...
+      $.get(static_path() + "/shaders.json", shaders);
     } catch (e) {
       alert(e);
     }
+  }
+
+  function shaders(shader) {
+    var refinements = 2; // 3;
+
+    sphereShader_ = new Shader(gCamera.getGLContext());
+    sphereShader_.init(shader["sphere"]["v"], shader["sphere"]["f"]);
+    sphere_ = createGLSphere(gCamera.getGLContext(), refinements);
+
+    cylinderShader_ = new Shader(gCamera.getGLContext());
+    cylinderShader_.init(shader["cylinder"]["v"], shader["cylinder"]["f"]);
+    cylinder_ = createGLOpenCylinder(gCamera.getGLContext(), Math.pow(2, refinements) * 4, 2);
+
+    $.get(initial_protein(), pdbreader, "binary");
   }
 
   function pdbreader(pdb) {
