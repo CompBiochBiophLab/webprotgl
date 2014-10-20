@@ -20,7 +20,7 @@ class Static(object):
       response.set_status_code(response.BAD_REQUEST)
       return response
 
-    filename = "/".join(path)
+    filename = os.path.join(os.environ["WORKDIR"], "/".join(path))
     with open(filename, "rb") as static:
       mtype, menc = mimetypes.guess_type(filename)
       if not mtype:

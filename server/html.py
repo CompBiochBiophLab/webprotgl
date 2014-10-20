@@ -4,7 +4,7 @@
 import os
 
 def html_format_file(name, title="", nav=dict()):
-  with open(os.path.join("templates", name + ".html")) as input:
+  with open(os.path.join(os.environ["WORKDIR"], "templates", name + ".html")) as input:
     vars = {
       "_protein_": "protein",
       "_root_": "",
@@ -22,7 +22,7 @@ def html_format_file(name, title="", nav=dict()):
     vars["html_main"] = content.format(**vars)
     vars.update(nav)
 
-    with open(os.path.join("templates", "backbone.html")) as backbone:
+    with open(os.path.join(os.environ["WORKDIR"], "templates", "backbone.html")) as backbone:
       page = backbone.read()
       return page.format(**vars).encode("UTF-8")
 
@@ -40,6 +40,6 @@ def html_format_text(main, title="", nav=dict()):
     vars["html_title"] = title + " - WebGLProtein"
 
   vars.update(nav)
-  with open(os.path.join("templates", "backbone.html")) as backbone:
+  with open(os.path.join(os.environ["WORKDIR"], "templates", "backbone.html")) as backbone:
     page = backbone.read()
     return page.format(**vars).encode("UTF-8")

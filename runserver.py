@@ -5,6 +5,7 @@ import sys, os
 
 __here__ = os.path.dirname(__file__)
 sys.path.append(__here__)
+os.environ["WORKDIR"] = __here__
 
 import importlib
 import logging
