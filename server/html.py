@@ -4,6 +4,7 @@
 import os
 
 def html_format_file(name, title="", nav=dict()):
+  print(os.environ["WORKDIR"])
   with open(os.path.join(os.environ["WORKDIR"], "templates", name + ".html")) as input:
     vars = {
       "_protein_": "protein",

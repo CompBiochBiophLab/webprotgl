@@ -1,0 +1,12 @@
+"Disabled","Type","Key","production","preprod","testing"
+,"Server","_protocol_","https","http","http"
+,"Server","_hostname_","www.jrenggli.com","www.jrenggli.com","localhost"
+,"Server","_port_",80,,8080
+,"Server","_root_","/","/webglprotein/","/"
+,"Server","_static_","static",,
+,"Server","_protein_","protein",,
+,"HTML","html_footer","<!--footer-->",,
+,"HTML","html_header","<!--header-->",,
+,"HTML","html_main","<!--main-->",,
+,"HTML","html_nav","<!--nav-->",,
+,"HTML","html_title","<!--title-->",,

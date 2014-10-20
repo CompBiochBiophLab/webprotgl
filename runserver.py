@@ -5,15 +5,20 @@ import sys, os
 
 __here__ = os.path.dirname(__file__)
 sys.path.append(__here__)
-os.environ["WORKDIR"] = __here__
 
 import importlib
 import logging
+import pickle
 import traceback
 
 from database import database
 from server import post_parser, responder
 from wsgiref.simple_server import make_server
+
+os.environ["WORKDIR"] = __here__
+with open(os.path.abspath(os.path.join(__here__, "dict.pickle")), "rb") as dict:
+  dico = pickle.load(dict)
+  dict.close()
 
 class RESTServer(object):
   """ The rest server itself """
@@ -25,9 +30,11 @@ class RESTServer(object):
     logging.basicConfig(filename=os.path.join(__here__, "webglprotein.log"), \
       level=logging.DEBUG)
     
-    self.__root = "/"
+    self.__root = dico["_root_"]
     self.__db = database.Database(os.path.join(__here__, "webglprotein.db"))
-    self.__server = responder.Responder("http", "localhost", self.__root, 8080)
+    self.__server = responder.Responder(dico["_protocol_"], \
+                                        dico["_hostname_"], \
+                                        self.__root, int(dico["_port_"]))
 
 ################################################################
 

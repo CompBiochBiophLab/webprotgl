@@ -5,7 +5,7 @@ Only for testing (?)
 
 import logging
 import mimetypes
-#import os
+import os
 
 from server import post_parser, responder
 

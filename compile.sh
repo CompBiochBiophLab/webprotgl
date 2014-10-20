@@ -26,15 +26,15 @@ database = "webglprotein.db"
 if not path.exists(root):
   makedirs(root)
 
-# print("Updating dictionary")
-# dic_path = "dict.pickle"
-# rval = subprocess.call(["scripts/csv_to_dic.py", dic_path, root], cwd=".")
-# print(rval)
-# 
-# fil = open(dic_path, "rb")
-# vars = pickle.load(fil)
-# fil.close()
-# 
+print("Updating dictionary")
+dic_path = os.path.join(root, "dict.pickle")
+rval = subprocess.call(["python3", "scripts/csv_to_dic.py", dic_path, root], cwd=".")
+print(rval)
+
+with open(dic_path, "rb") as fil:
+  vars = pickle.load(fil)
+  fil.close()
+
 # Folders / Files to copy
 paths = ["__init__.py", "runserver.py", \
   "database", "server", "static", "templates"]
