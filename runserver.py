@@ -16,8 +16,9 @@ from server import post_parser, responder
 from wsgiref.simple_server import make_server
 
 os.environ["WORKDIR"] = __here__
+dictionary = dict()
 with open(os.path.abspath(os.path.join(__here__, "dict.pickle")), "rb") as dict:
-  dico = pickle.load(dict)
+  dictionary = pickle.load(dict)
   dict.close()
 
 class RESTServer(object):
@@ -30,11 +31,11 @@ class RESTServer(object):
     logging.basicConfig(filename=os.path.join(__here__, "webglprotein.log"), \
       level=logging.DEBUG)
     
-    self.__root = dico["_root_"]
+    self.__root = dictionary["_root_"]
     self.__db = database.Database(os.path.join(__here__, "webglprotein.db"))
-    self.__server = responder.Responder(dico["_protocol_"], \
-                                        dico["_hostname_"], \
-                                        self.__root, int(dico["_port_"]))
+    self.__server = responder.Responder(dictionary["_protocol_"], \
+                                        dictionary["_hostname_"], \
+                                        self.__root, int(dictionary["_port_"]))
 
 ################################################################
 
@@ -54,14 +55,14 @@ class RESTServer(object):
           user = database.users().find_session(args)
         print(user)
       
-      # Check there is a valid path
-      path = env["PATH_INFO"]
-      if path[0:len(self.__root)] != self.__root:
-        print("Can't handle this path!")
-        response.set_status_code(400)
-        return
+      # # Check there is a valid path
+      # path = env["PATH_INFO"]
+      # if path[0:len(self.__root)] != self.__root:
+      #   logging.error("Can't handle this path!")
+      #   response.set_status_code(response.BAD_REQUEST)
+      #   return
         
-      path = path[len(self.__root):]
+      path = env["PATH_INFO"][1:]
       path = path.split("/")
 
       # Special paths: "", "favicon.ico", "sitemap.xml", "robots.txt"
