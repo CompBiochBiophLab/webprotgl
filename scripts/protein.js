@@ -19,20 +19,14 @@ function AminoAcid()
   this.addBonds = function(root, cylinder, prevAmino, atoms) {
     var zero = [0., 0., 0.];
     bonds = this.getBonds();
-    for (var bond = 0; bond < bonds.length; ++bond) {
-      atom0 = atoms.getChild(bonds[bond][0]);
-      atom1 = atoms.getChild(bonds[bond][1]);
-      var p0 = atom0.multiply(zero);
-      var p1 = atom1.multiply(zero);
+
+    link = function(p0, p1, colA, colB) {
       var dir = [0., 0., 1.];
       tdl.fast.subVector(dir, p1, p0);
       var dist = Math.sqrt(tdl.fast.dot(dir, dir));
       var trf = root.addChild();
       trf.addShape(cylinder);
-      colA = atom0.findParameter("colour").getValue();
-      colB = atom1.findParameter("colour").getValue();
-      console.log(colA);
-      console.log(colB);
+
       trf.setParameter("colourA", createVectorParameter(colA));
       trf.setParameter("colourB", createVectorParameter(colB));
       trf.setParameter("radius", createFloatParameter(0.5));
@@ -52,18 +46,22 @@ function AminoAcid()
         var angle = Math.acos(tdl.fast.dot([0., 0., 1.], dir_n));
         trf.rotate(axis, angle);
       }
-        trf.setParameter("p0", createVec3Parameter(p0));
-        trf.setParameter("p1", createVec3Parameter(p1));
-     }
-    var position = atoms.getChild(0).multiply(zero);
-//     console.log(position);
-    /*for (var atom = 0; atom < this.getBonds().length(); ++atom) {
-    }*/
-//     var trf = root.addChild();
-//     trf.addShape(cylinder);
-//     trf.translate(atoms.getChild(0).
-//     trf.setParameter("radius", createFloatParameter(0.15));
-//     console.log(this.getSize());
+    }
+    for (var bond = 0; bond < bonds.length; ++bond) {
+      atom0 = atoms.getChild(bonds[bond][0]);
+      atom1 = atoms.getChild(bonds[bond][1]);
+      var p0 = atom0.multiply(zero);
+      var p1 = atom1.multiply(zero);
+      colA = atom0.findParameter("colour").getValue();
+      colB = atom1.findParameter("colour").getValue();
+      link(p0, p1, colA, colB);
+    }
+
+    if (prevAmino) {
+      var pN = atoms.getChild(0).multiply(zero);
+      var pCa = prevAmino.getChild(2).multiply(zero);
+      link(pN, pCa, this.N, this.C);
+    }
   }
 
   this.getAtomInfo = function(index) {
@@ -518,7 +516,7 @@ function Protein()
       }
       var trf2 = cylinderRoot.addChild();
       amino.addBonds(trf2, cylinder, prevAmino, trf);
-      prevAmino = amino;
+      prevAmino = trf;
     }
     console.log(sum);
     return offset;
