@@ -12,14 +12,12 @@ import pickle
 import traceback
 
 from database import database
+from database.dictionary import Dictionary
 from server import post_parser, responder
 from wsgiref.simple_server import make_server
 
 os.environ["WORKDIR"] = __here__
-dictionary = dict()
-with open(os.path.abspath(os.path.join(__here__, "dict.pickle")), "rb") as dict:
-  dictionary = pickle.load(dict)
-  dict.close()
+dictionary = Dictionary(os.path.abspath(os.path.join(__here__, "dict.pickle")))
 
 class RESTServer(object):
   """ The rest server itself """
@@ -31,11 +29,12 @@ class RESTServer(object):
     logging.basicConfig(filename=os.path.join(__here__, "webglprotein.log"), \
       level=logging.DEBUG)
     
-    self.__root = dictionary["_root_"]
+    self.__root = Dictionary.get("_base_path_")
     self.__db = database.Database(os.path.join(__here__, "webglprotein.db"))
-    self.__server = responder.Responder(dictionary["_protocol_"], \
-                                        dictionary["_hostname_"], \
-                                        self.__root, int(dictionary["_port_"]))
+    self.__server = responder.Responder(Dictionary.get("_protocol_"), \
+                                        Dictionary.get("_hostname_"), \
+                                        self.__root, \
+                                        int(Dictionary.get("_port_")))
 
 ################################################################
 
