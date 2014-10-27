@@ -1,4 +1,97 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,400italic,700,700italic&subset=latin,latin-ext,greek);
 
+body {
+  font-family: "Open Sans",Helvetica,sans-serif;
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+  text-align: justify;
+}
+
+header {
+  align-self: center;
+  background-color: #AACCBB;
+  border-radius: 0.75em;
+  box-shadow: 2px 2px 3px 3px #668877;
+  color: white;
+  font-size: 1.2em;
+  font-variant: small-caps;
+  font-weight: bold;
+  order: 1;
+  padding: 0.25em;
+  text-align: center;
+  text-shadow: 0 0 5px black;
+  width: 80%;
+}
+
+footer {
+  display: none;
+  order: 3;
+}
+
+main {
+  order: 2;
+}
+
+nav {
+  background-color: #AACCBB;
+  box-shadow: 5px 0 5px #668877;
+  height: 100%;
+  position: absolute;
+  width: 200px;
+}
+
+nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li {
+  background-color: #eeffee;
+  border-radius: 0.5em;
+  box-shadow: 2px 2px 2px #668877;
+  margin: 5px;
+}
+
+nav ul li:hover {
+  box-shadow: inset 2px 2px 2px #668877;
+}
+
+nav ul li.separator, nav ul li.separator:hover {
+  height: 1px;
+  margin: 1em;
+}
+
+nav ul li a {
+  color: black;
+  display: block;
+  padding: 5px 1em 5px 1em;
+  text-decoration: none;
+}
+
+#page {
+  display: flex;
+  flex-direction: column;
+  left: 200px;
+  padding: 1em;
+  position: absolute;
+  right: 0;
+}
+
+h1 {
+  text-align: center;
+}
+
+.button {
+  background-color: #aaccbb;
+  border-radius: 0.5em;
+  box-shadow: 2px 2px 2px #668877;
+  display: block;
+  padding: 5px;
+  text-align: center;
+}
+/*
 #commands {
  width: 100%;
  padding-bottom: 2.5em;
@@ -29,3 +122,4 @@
  border-radius: 2em;
  display: none;
 }
+*/

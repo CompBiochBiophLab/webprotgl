@@ -26,3 +26,6 @@ class Dictionary(object):
 
   def get(key):
     return Dictionary.__singleton[key]
+
+  def format(value):
+    return value.format(**Dictionary.__singleton)

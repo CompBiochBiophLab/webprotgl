@@ -13,7 +13,7 @@ import traceback
 
 from database import database
 from database.dictionary import Dictionary
-from server import post_parser, responder
+from server import html, post_parser, responder
 from wsgiref.simple_server import make_server
 
 os.environ["WORKDIR"] = __here__
@@ -65,16 +65,29 @@ class RESTServer(object):
       path = path.split("/")
 
       # Special paths: "", "favicon.ico", "sitemap.xml", "robots.txt"
-      if path == [""]:
-        response.set_body("<html><body>Index.html</body></html>", "text/html")
-        return
+      special = ["favicon.ico", "sitemap.xml", "robots.txt"]
+      if len(path) == 1 and path[0] in special:
+        path.append(path[0])
+        path[0] = "static"
+        # if not path[1]:
+        #   path[1] = "index.html"
+        # if path[1].endswith(".html"):
+        #   response.set_body(html_format_file("protein", protein_name.upper()), "text/html")
+        #   return response
       
       try:
         logging.debug("Now serving " + str(path))
-        module = importlib.import_module("server." + path[0])
-        factory = getattr(module, path[0].title())
-        server = factory()
-        response = server.serve(env, path, user, database)
+
+        if len(path) == 1:
+          if not path[0]:
+            path[0] = "index.html"
+          if path[0].endswith(".html"):
+            response.set_body(html.html_format_file(path[0][:-5], Dictionary.get("html_title")), "text/html")
+        else:
+          module = importlib.import_module("server." + path[0])
+          factory = getattr(module, path[0].title())
+          server = factory()
+          response = server.serve(env, path, user, database)
       finally:
         pass
 
