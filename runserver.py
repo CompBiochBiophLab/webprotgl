@@ -60,9 +60,8 @@ class RESTServer(object):
       #   logging.error("Can't handle this path!")
       #   response.set_status_code(response.BAD_REQUEST)
       #   return
-        
-      path = env["PATH_INFO"][1:]
-      path = path.split("/")
+
+      path = env["PATH_INFO"][1:].split("/")
 
       # Special paths: "", "favicon.ico", "sitemap.xml", "robots.txt"
       special = ["favicon.ico", "sitemap.xml", "robots.txt"]
@@ -82,7 +81,7 @@ class RESTServer(object):
           if not path[0]:
             path[0] = "index.html"
           if path[0].endswith(".html"):
-            response.set_body(html.html_format_file(path[0][:-5], Dictionary.get("html_title")), "text/html")
+            response.set_body(html.html_format_file(path[0][:-5]), "text/html")
         else:
           module = importlib.import_module("server." + path[0])
           factory = getattr(module, path[0].title())

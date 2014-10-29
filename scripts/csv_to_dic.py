@@ -27,8 +27,8 @@ with open(csv_name, newline="") as csvfile:
     if key in dic:
       raise Exception("Double variable: " + str(key))
 
-    if not pro:
-      raise Exception("Missing translation for: " + str(key))
+    if not pro and key != "_base_path_":
+      raise Exception("Missing translation for: [" + str(key) + "]")
     if not tst:
       tst = pro
     if not pre:

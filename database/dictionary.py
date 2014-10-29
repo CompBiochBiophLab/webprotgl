@@ -19,13 +19,15 @@ class Dictionary(object):
       Dictionary.__singleton["_protocol_"], \
       Dictionary.__singleton["_hostname_"], \
       port_txt, \
-      Dictionary.__singleton["_base_path_"])[:-1]
+      Dictionary.__singleton["_base_path_"])
 
   def all():
     return Dictionary.__singleton
 
   def get(key):
-    return Dictionary.__singleton[key]
+    if key in Dictionary.__singleton:
+      return Dictionary.__singleton[key]
+    return None
 
   def format(value):
     return value.format(**Dictionary.__singleton)

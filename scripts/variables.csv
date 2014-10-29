@@ -2,19 +2,22 @@
 ,"Server","_protocol_","https","http","http"
 ,"Server","_hostname_","www.jrenggli.com","www.jrenggli.com","localhost"
 ,"Server","_port_",80,,8080
-,"Server","_base_path_","/","/webglprotein/","/"
+,"Server","_base_path_",,"/webglprotein",
 "X","Server",,,,
+,"Link","_contact_","contact.html",,
 ,"Link","_static_","static",,
 ,"Link","_session_","session",,
 ,"Link","_protein_","protein",,
 ,"Link","_register_","register",,
 ,"Link","_login_","login",,
 ,"Link","_logout_","logout",,
+,"Link","_registered_","registered.html",,
 ,"HTML","html_footer","<!--footer-->",,
 ,"HTML","html_header","WebGL Protein Viewer",,
 ,"HTML","html_main","<!--main-->",,
 ,"HTML","html_nav","<!--nav-->",,
-,"HTML","html_title","WebGLProtein",,
+,"HTML","html_title","Online Protein",,
+,"Common","home","Home",,
 ,"Common","register","Register",,
 ,"Common","login","Login",,
 ,"Common","logout","Logout",,

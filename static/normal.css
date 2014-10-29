@@ -8,30 +8,7 @@ body {
   text-align: justify;
 }
 
-header {
-  align-self: center;
-  background-color: #AACCBB;
-  border-radius: 0.75em;
-  box-shadow: 2px 2px 3px 3px #668877;
-  color: white;
-  font-size: 1.2em;
-  font-variant: small-caps;
-  font-weight: bold;
-  order: 1;
-  padding: 0.25em;
-  text-align: center;
-  text-shadow: 0 0 5px black;
-  width: 80%;
-}
-
-footer {
-  display: none;
-  order: 3;
-}
-
-main {
-  order: 2;
-}
+/** Navigation left panel **/
 
 nav {
   background-color: #AACCBB;
@@ -70,6 +47,8 @@ nav ul li a {
   text-decoration: none;
 }
 
+/** Basic layout, header & footer **/
+
 #page {
   display: flex;
   flex-direction: column;
@@ -79,8 +58,46 @@ nav ul li a {
   right: 0;
 }
 
+header {
+  align-self: center;
+  background-color: #AACCBB;
+  border-radius: 0.75em;
+  box-shadow: 2px 2px 3px 3px #668877;
+  color: white;
+  font-size: 1.2em;
+  font-variant: small-caps;
+  font-weight: bold;
+  margin-bottom: 1em;
+  order: 1;
+  padding: 0.25em;
+  text-align: center;
+  text-shadow: 0 0 5px black;
+  width: 80%;
+}
+
+footer {
+  display: none;
+  order: 3;
+}
+
+/** Here starts the fun **/
+
+main {
+  order: 2;
+}
+
 h1 {
   text-align: center;
+}
+
+p {
+  margin-left: auto;
+  margin-right: auto;
+  width: 90%;
+}
+
+.hive {
+  display: none;
 }
 
 .button {
@@ -91,35 +108,59 @@ h1 {
   padding: 5px;
   text-align: center;
 }
-/*
-#commands {
- width: 100%;
- padding-bottom: 2.5em;
+
+/** Forms **/
+
+form {
+  border: 1px solid #668877;
+  border-radius: 1em;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 1em;
+  width: 50%;
 }
 
-.action {
- background-color: #AACCBB;
- cursor: pointer;
- padding: 0.4em;
- margin: 0.2em;
- float: left;
- box-shadow: 0.2em 0.2em 0.3em 0.1em #333333;
- border-radius: 0.5em;
+form table {
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
-.action:hover {
- box-shadow: 0.2em 0.2em 0.3em 0.1em #AAAAAA;
+/** Dialog **/
+
+#dialog {
+  background-color: rgba(238, 255, 238, 0.9);
+  border-radius: 2em;
+  bottom: 0;
+  box-shadow: 0 0 5em black;
+  display: none;
+  left: 0;
+  margin: 25%;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  z-index: 1;
 }
 
-#popup {
- top: 8em;
- left: 4em;
- padding: 2em;
- position: absolute;
- background-color: #AACCBB;
- float: left;
- box-shadow: 1em 1em 1.5em 0.5em #333333;
- border-radius: 2em;
- display: none;
+#dialog p {
+  padding: 1em;
 }
-*/
+
+#dialog .actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+#dialog button {
+  background-color: white;
+  border: 1px solid #668877;
+  border-radius: 1em;
+  padding: 1em;
+}
+
+#dialog button:hover {
+  background-color: #aaccbb;
+  cursor: pointer;
+}

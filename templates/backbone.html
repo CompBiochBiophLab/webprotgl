@@ -1,12 +1,52 @@
 <!DOCTYPE html>
 <html>
 <head lang="en">
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <title>{html_title}</title>
-  <link rel="stylesheet" type="text/css" href="{_root_}/{_static_}/normal.css" title="default" />
-  <link rel="icon" type="image/png" href="{_root_}/{_static_}/logo.png">
+ <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ <title>{html_title}</title>
+ <link rel="stylesheet" type="text/css" href="{_root_}/{_static_}/normal.css" title="default" />
+ <link rel="icon" type="image/png" href="{_root_}/{_static_}/logo.png">
+ <script type="text/javascript" src="{_root_}/{_static_}/jquery-1.10.2.min.js"></script>
+ <script type="text/javascript">
+show_dialog = function(text, pos, neg) {{
+  $("#dialog").css("display", "block");
+  $("#dialog_text").text(text);
+  if (pos) {{
+    $("#dialog_pos").css("display", "block");
+    $("#dialog_pos").text(pos);
+  }} else {{
+    $("#dialog_pos").css("display", "none");
+  }}
+  if (neg) {{
+    $("#dialog_neg").css("display", "block");
+    $("#dialog_neg").text(neg);
+  }} else {{
+    $("#dialog_neg").css("display", "none");
+  }}
+
+  var def = $.Deferred();
+  $(document).on("click", "#dialog_pos", function(event) {{
+    def.resolve(true);
+  }});
+  $(document).on("click", "#dialog_neg", function(event) {{
+    def.resolve(false);
+  }});
+
+  return def.promise();
+}}
+
+hide_dialog = function() {{
+  $("#dialog").css("display", "none");
+}}
+ </script>
 </head>
 <body>
+ <div id="dialog">
+  <p id="dialog_text"></p>
+  <div class="actions">
+   <button id="dialog_neg"></button>
+   <button id="dialog_pos"></button>
+  </div>
+ </div>
  <nav>
   <ul>
 {html_nav}

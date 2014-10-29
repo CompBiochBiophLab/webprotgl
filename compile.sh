@@ -47,6 +47,9 @@ for source in paths:
     dest = path.join(root, source)
   if path.isfile(source):
     print("Copying file " + source + " to " + dest)
+#    if source == "templates":
+#      # Pre-format files
+#
     shutil.copy(source, dest)
   else:
     print("Copying folder " + source)
