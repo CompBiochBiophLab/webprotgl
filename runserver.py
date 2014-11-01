@@ -39,12 +39,12 @@ class RESTServer(object):
 
   def __call__(self, env, start_response):
     """ Entry point """
+    user = None
     response = responder.Response()
     
     # First' check for session cookie
     try:
       database = self.__db.connect()
-      user = None
       if "HTTP_COOKIE" in env:
         #print(env["HTTP_COOKIE"])
         args = post_parser.parse(data = env["HTTP_COOKIE"])
@@ -95,6 +95,7 @@ class RESTServer(object):
       logging.error(traceback.format_exc())
       logging.error("--------")
     finally:
+      response.finalise(user)
       logging.debug(response.get_status_code())
       if database:
         database.close()

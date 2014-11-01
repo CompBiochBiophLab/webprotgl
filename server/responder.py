@@ -1,6 +1,9 @@
 """ Server for non-200 codes """
 
 import logging
+import traceback
+
+from server.html import html_format_template
 
 class Response(object):
   PROCESSING  = 102
@@ -10,24 +13,46 @@ class Response(object):
   BAD_LOGIN   = 401
   FORBIDDEN   = 403
   NOT_FOUND   = 404
+  GONE        = 410
   PRECONDITION_FAILED = 412
   ERROR       = 500
 
   def __init__(self):
     self.__status = self.NOT_FOUND
-    self.__body = "".encode("UTF-8")
+    self.__body = b""  # .encode("UTF-8")
     self.__mimetype = "application/json"
     self.__cookie = None
     self.__location = ""
-    
+
+  def finalise(self, user):
+    if not self.__body and self.__status >= 400:
+      try:
+        self.__body = html_format_template( \
+          "errors/" + str(self.__status) + ".html", user)
+        self.__mimetype = "text/html"
+      except Exception as exc:
+        logging.error("Exception serving error " + str(self.__status) + \
+                      ": " + str(exc))
+        logging.error(traceback.format_exc())
+        logging.error("--------")
+
   def get_body(self):
     return [self.__body]
     
   def set_body(self, body, mimetype = None):
     self.__status = self.OK
-    self.__body = body#.encode("UTF-8")
+    self.__body = body
     if mimetype:
-      self.__mimetype = mimetype#.encode("UTF-8")
+      self.__mimetype = mimetype
+
+  def set_html(self, path, user):
+    self.__body = html_format_template(path, user)
+    if self.__body:
+      self.__status = self.OK
+      self.__mimetype = "text/html"
+    else:
+      self.__status = self.NOT_FOUND
+      self.__body = b""
   
   def set_cookie(self, cookie):
     self.__cookie = cookie
@@ -60,6 +85,7 @@ class Response(object):
     }
     
     assert(self.__status in available)
+
     return str(self.__status) + " - " + available[self.__status]
     
   def set_status_code(self, code):

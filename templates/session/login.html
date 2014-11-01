@@ -1,0 +1,66 @@
+<script type="text/javascript">
+$(document).ready(function() {{
+
+var request;
+$("#form_login").submit(function(event) {{
+  show_dialog("Processing...", "", "");
+  event.preventDefault();
+
+  if (request) {{
+    request.abort();
+  }}
+
+  var $form = $(this);
+  var $inputs = $form.find("input", "button");
+  var to_send = $form.serialize();
+
+  $inputs.prop("disabled", true);
+
+  request = $.ajax({{
+    type: "post",
+    data: to_send
+  }}).done(function(response, status, jqXHR) {{
+    hide_dialog();
+    var updated = document.open("text/html", "replace")
+    updated.write(response);
+    updated.close();
+  }}).fail(function(jqXHR, status, error) {{
+    var text = "Failed. Try again.";
+    if (jqXHR.status >= 500) {{
+      text = "Oops! An error occurred on our servers. Feel free to <a href=\"{_root_}/{_static_}/{_contact_}\">contact us</a> if this error persists.";
+    }}
+
+    show_dialog(text, "ok", "").done(function(result) {{
+      hide_dialog();
+      $inputs.prop("disabled", false);
+    }});
+  }}).always(function() {{
+  }});
+}});
+
+}});
+</script>
+<p>To log into our services, please provide us with the following information:</p>
+<form name="login" id="form_login" method="POST">
+ <table>
+  <tbody>
+   <tr>
+    <td><label>Email address:</label></td>
+    <td><input name="email" type="email" required="1" /></td>
+   </tr>
+   <tr>
+    <td><label>Password (min. 8 chars):</label></td>
+    <td><input pattern=".{{8,}}" name="password" type="password" required="1" /></td>
+   </tr>
+   <tr class="hive">
+    <td><label>Retype your password:</label></td>
+    <td><input pattern=".{{8,}}" name="password_bis" type="password" /></td>
+   </tr>
+   <tr>
+    <td><label>Confirm:</label></td>
+    <td><button id="login" type="submit">Log-in</button></td>
+   </tr>
+  </tbody>
+ </table>
+</form>
+<p>Don't have an account yet? <a href="{_root_}/{_session_}/{_register_}">Register now!</a></p>

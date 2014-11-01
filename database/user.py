@@ -3,8 +3,9 @@
 from database.user_group import UserGroup
 
 class User(object):
-  def __init__(self, id, first_name, last_name, email):
+  def __init__(self, id, title, first_name, last_name, email):
     self.__id = id
+    self.__title = title
     self.__first_name = first_name
     self.__last_name = last_name
     self.__email = email

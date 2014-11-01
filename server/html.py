@@ -5,19 +5,25 @@ import os
 
 from database.dictionary import Dictionary
 
+def html_format_template(path, user=None, nav=None, vars=None):
+  with open(os.path.join(os.environ["WORKDIR"], "templates", path)) as input:
+    return html_format_text(input.read(), user, nav, vars)
+  return None
+
 def html_format_file(name, title="", user=None, nav=None):
   with open(os.path.join(os.environ["WORKDIR"], "templates", name + ".html")) as input:
-    return html_format_text(input.read(), title, user, nav)
+    vars = {"title": title}
+    return html_format_text(input.read(), user, nav, vars)
+  return None
 
-def html_format_text(main, title="", user=None, nav=None):
-  vars = {
-    "title": title,
-  }
+def html_format_text(main, user=None, nav=None, vars=None):
+  if not vars:
+    vars = dict()
 
   vars.update(Dictionary.all())
 
-  if title:
-    vars["html_title"] = title + " | " + vars["html_title"]
+  if "title" in vars:
+    vars["html_title"] = vars["title"] + " | " + vars["html_title"]
 
   # Navigation defaults
   if not nav:
@@ -46,3 +52,4 @@ def html_format_text(main, title="", user=None, nav=None):
   with open(os.path.join(os.environ["WORKDIR"], "templates", "backbone.html")) as backbone:
     page = backbone.read()
     return page.format(**vars).encode("UTF-8")
+  return None
