@@ -1,13 +1,10 @@
 """ Serve a specific protein """
 
 import logging
-import mimetypes
-import os
-import traceback
 
-from server import post_parser, responder
+from server import responder
 from server.html import html_format_file
-from server.protein_downloader import ProteinGetter
+from server.async.protein_downloader import ProteinGetter
 
 class Protein(object):
   def __init__(self):

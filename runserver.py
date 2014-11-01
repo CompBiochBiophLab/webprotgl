@@ -8,7 +8,6 @@ sys.path.append(__here__)
 
 import importlib
 import logging
-import pickle
 import traceback
 
 from database import database
@@ -87,6 +86,7 @@ class RESTServer(object):
           factory = getattr(module, path[0].title())
           server = factory()
           response = server.serve(env, path, user, database)
+          assert(response)
       finally:
         pass
 

@@ -37,7 +37,7 @@ def html_format_text(main, title="", user=None, nav=None):
     attr = ""
     if len(item) < 2:
       # Separation
-      navigation += "   <li class=\"separator\"></li>"
+      navigation += "   <li class=\"separator\"></li>\n"
     else:
       navigation += "   <li><a href=\"{0}\">{1}</a></li>\n".format(item[0], item[1])
   vars["html_nav"] = navigation

@@ -1,0 +1,12 @@
+Welcome to the Online Protein!
+
+To finish registering to our services, simply open the following link in a browser:
+
+{_root_}/{_session_}/{_activate_}/{__activation_link}
+
+If you didn't request this registration or changed your mind, you can simply delete this email. Without activation in the next 2 days, this account will be erased and you won't receive any further emails from us.
+
+We hope to see you soon !
+
+The Online Protein team
+

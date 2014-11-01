@@ -19,8 +19,9 @@ $("#form_login").submit(function(event) {{
     type: "post",
     data: to_send
   }}).done(function(response, status, jqXHR) {{
-    //alert("Success " + status);
-    window.location.href = "{_root_}/{_static_}/{_registered_}";
+    var updated = document.open("text/html", "replace")
+    updated.write(response);
+    updated.close();
   }}).fail(function(jqXHR, status, error) {{
     var text = "Error: Please verify your inputs and try again";
     if (jqXHR.status >= 500) {{

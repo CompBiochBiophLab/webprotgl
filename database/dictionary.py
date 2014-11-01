@@ -29,5 +29,8 @@ class Dictionary(object):
       return Dictionary.__singleton[key]
     return None
 
-  def format(value):
+  def format(value, vars=None):
+    if vars:
+      vars.update(Dictionary.__singleton)
+      return value.format(**vars)
     return value.format(**Dictionary.__singleton)

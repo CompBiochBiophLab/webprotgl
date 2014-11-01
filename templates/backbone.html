@@ -9,16 +9,16 @@
  <script type="text/javascript">
 show_dialog = function(text, pos, neg) {{
   $("#dialog").css("display", "block");
-  $("#dialog_text").text(text);
+  $("#dialog_text").html(text);
   if (pos) {{
     $("#dialog_pos").css("display", "block");
-    $("#dialog_pos").text(pos);
+    $("#dialog_pos").html(pos);
   }} else {{
     $("#dialog_pos").css("display", "none");
   }}
   if (neg) {{
     $("#dialog_neg").css("display", "block");
-    $("#dialog_neg").text(neg);
+    $("#dialog_neg").html(neg);
   }} else {{
     $("#dialog_neg").css("display", "none");
   }}

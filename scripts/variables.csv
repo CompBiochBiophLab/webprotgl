@@ -1,23 +1,29 @@
-"Disabled","Type","Key","production","preprod","testing"
-,"Server","_protocol_","https","http","http"
-,"Server","_hostname_","www.jrenggli.com","www.jrenggli.com","localhost"
-,"Server","_port_",80,,8080
-,"Server","_base_path_",,"/webglprotein",
-"X","Server",,,,
-,"Link","_contact_","contact.html",,
-,"Link","_static_","static",,
-,"Link","_session_","session",,
-,"Link","_protein_","protein",,
-,"Link","_register_","register",,
-,"Link","_login_","login",,
-,"Link","_logout_","logout",,
-,"Link","_registered_","registered.html",,
-,"HTML","html_footer","<!--footer-->",,
-,"HTML","html_header","WebGL Protein Viewer",,
-,"HTML","html_main","<!--main-->",,
-,"HTML","html_nav","<!--nav-->",,
-,"HTML","html_title","Online Protein",,
-,"Common","home","Home",,
 ,"Common","register","Register",,
-,"Common","login","Login",,
+,"Common","home","Home",,
 ,"Common","logout","Logout",,
+,"Common","login","Login",,
+,"HTML","html_header","WebGL Protein Viewer",,
+,"HTML","html_footer","<!--footer-->",,
+,"HTML","html_main","<!--main-->",,
+,"HTML","html_title","Online Protein",,
+,"HTML","html_nav","<!--nav-->",,
+,Link,_activate_,activate,,
+,"Link","_logout_","logout",,
+,Link,_registered_,registered,,
+,"Link","_login_","login",,
+,"Link","_static_","static",,
+,"Link","_contact_","contact.html",,
+,"Link","_session_","session",,
+,"Link","_register_","register",,
+,"Link","_protein_","protein",,
+,"Server","_hostname_","www.jrenggli.com","www.jrenggli.com","localhost"
+,"Server","_protocol_","https","http","http"
+,Server,_email_port_,25,,
+,Server,_email_server_,smtp.jrenggli.com,,localhost
+,Server,_email_password_,test,,
+,Server,_email_sender_,Online Protein - No Reply <no-reply@jrenggli.com>,,
+,Server,_email_login_,test,,
+,"Server","_base_path_",,"/webglprotein",
+,"Server","_port_",80,,8080
+"Disabled","Type","Key","production","preprod","testing"
+,Email,mail_register_subject,Welcome to the Online Protein,,Welcome to the Online Protein [Test]
