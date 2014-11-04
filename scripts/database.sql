@@ -9,7 +9,9 @@ CREATE TABLE IF NOT EXISTS Users (rid INTEGER NOT NULL, title TEXT NOT NULL,
   CONSTRAINT user_pk PRIMARY KEY(rid), CONSTRAINT user_email UNIQUE(email));
 
 CREATE TABLE IF NOT EXISTS Memberships (gid INTEGER NOT NULL, rid INTEGER NOT NULL,
-  CONSTRAINT member_pk PRIMARY KEY(gid, rid));
+  CONSTRAINT member_pk PRIMARY KEY(gid, rid),
+  FOREIGN KEY (gid) REFERENCES Groups(gid),
+  FOREIGN KEY (rid) REFERENCES Users(rid));
 
 CREATE TABLE IF NOT EXISTS Sessions (eid TEXT NOT NULL, expires TIMESTAMP NOT NULL,
   state INTEGER NOT NULL, email TEXT NOT NULL,
@@ -21,11 +23,13 @@ CREATE TABLE IF NOT EXISTS Sources (sid INTEGER NOT NULL, name TEXT NOT NULL,
 
 CREATE TABLE IF NOT EXISTS Proteins (pid INTEGER NOT NULL, name TEXT NOT NULL, title TEXT DEFAULT NULL,
   sid INTEGER NOT NULL, model_date DATETIME DEFAULT NULL, date DATETIME NOT NULL,
-  CONSTRAINT protein_pk PRIMARY KEY(pid), CONSTRAINT protein_unique UNIQUE (name, sid));
+  CONSTRAINT protein_pk PRIMARY KEY(pid), CONSTRAINT protein_unique UNIQUE (name, sid),
+  FOREIGN KEY (sid) REFERENCES Sources(sid));
 
 CREATE TABLE IF NOT EXISTS Models (pid INTEGER NOT NULL, model INTEGER NOT NULL, version INTEGER NOT NULL,
   date DATETIME NOT NULL, data BLOB NOT NULL,
-  CONSTRAINT model_pk PRIMARY KEY (pid, model));
+  CONSTRAINT model_pk PRIMARY KEY (pid, model),
+  FOREIGN KEY (pid) REFERENCES Proteins(pid));
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

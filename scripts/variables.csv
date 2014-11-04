@@ -3,15 +3,15 @@
 ,"Common","home","Home",,
 ,"Common","logout","Logout",,
 ,"Common","login","Login",,
-,HTML,html_header,Online Protein Viewer,,
+,"HTML","html_header","Online Protein Viewer",,
 ,"HTML","html_footer","<!--footer-->",,
 ,"HTML","html_main","<!--main-->",,
-,HTML,html_title,Online Protein Viewer,,
+,"HTML","html_title","Online Protein Viewer",,
 ,"HTML","html_nav","<!--nav-->",,
-,Link,_activated_,activated,,
-,Link,_activate_,activate,,
+,"Link","_activated_","activated",,
+,"Link","_activate_","activate",,
 ,"Link","_logout_","logout",,
-,Link,_registered_,registered,,
+,"Link","_registered_","registered",,
 ,"Link","_login_","login",,
 ,"Link","_static_","static",,
 ,"Link","_contact_","contact.html",,
@@ -20,11 +20,13 @@
 ,"Link","_protein_","protein",,
 ,"Server","_hostname_","www.jrenggli.com","www.jrenggli.com","localhost"
 ,"Server","_protocol_","https","http","http"
-,Server,_email_port_,25,,
-,Server,_email_server_,smtp.jrenggli.com,,localhost
-,Server,_email_password_,test,,
-,Server,_email_sender_,Online Protein Viewer - No Reply <no-reply@jrenggli.com>,,
-,Server,_email_login_,test,,
+,"Server","_email_port_",25,,
+,"Server","_email_server_","smtp.jrenggli.com",,"localhost"
+,"Server","_email_password_","test",,
+,"Server","_email_sender_","Online Protein Viewer - No Reply <no-reply@jrenggli.com>",,
+,"Server","_email_login_","test",,
 ,"Server","_base_path_",,"/webglprotein",
 ,"Server","_port_",80,,8080
-,Email,mail_register_subject,Welcome to the Online Protein,,Welcome to the Online Protein [Test]
+,"Server","_server_log_","proteins.log",,
+,"Server","_server_db_","proteins.db",,
+,"Email","mail_register_subject","Welcome to the Online Protein",,"Welcome to the Online Protein [Test]"

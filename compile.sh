@@ -21,7 +21,6 @@ except Exception as e:
   root = sys.argv[1] #"production"
 
 print("Compiling for " + root)
-database = "webglprotein.db"
 
 if not path.exists(root):
   makedirs(root)
@@ -34,6 +33,8 @@ print(rval)
 with open(dic_path, "rb") as fil:
   vars = pickle.load(fil)
   fil.close()
+
+database = vars["_server_db_"]
 
 # Folders / Files to copy
 paths = ["__init__.py", "runserver.py", \
@@ -152,7 +153,7 @@ with open(os.path.join(root, "static", "shaders.json"), "w") as output:
 # subprocess.call(["chmod", "777", backup])
 
 # Create log file
-logfile = path.join(root, "webglprotein.log")
+logfile = path.join(root, vars["_server_log_"])
 subprocess.call(["touch", logfile])
 subprocess.call(["chmod", "666", logfile])
 

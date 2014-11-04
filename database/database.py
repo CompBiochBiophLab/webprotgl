@@ -10,6 +10,7 @@ class Connected(object):
     self.__filepath = db_path
     self.__database = sqlite3.connect(db_path,
         detect_types = sqlite3.PARSE_COLNAMES)
+    self.__database.execute("PRAGMA foreign_keys = ON")
 
   def clone(self, shallow=False):
     assert(self.__database)

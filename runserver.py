@@ -25,10 +25,11 @@ class RESTServer(object):
 
   def __init__(self):
     """ Initialise servers, regexes """
-    logging.basicConfig(filename=os.path.join(__here__, "webglprotein.log"),
-        level=logging.DEBUG)
+    logging.basicConfig(filename=os.path.join(__here__,
+        Dictionary.get("_server_log_")), level=logging.DEBUG)
 
-    self.__db = Database(os.path.join(__here__, "webglprotein.db"))
+    self.__db = Database(os.path.join(__here__,
+                                      Dictionary.get("_server_db_")))
     self.__server = responder.Responder()
 
 ################################################################
