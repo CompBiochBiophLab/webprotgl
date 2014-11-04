@@ -25,11 +25,11 @@ class ProteinDB(object):
 
 ################################################################
 
-  def find_source(self, sourcename, basetype):
+  def find_source(self, source_name, base_type):
     cursor = self.__database.cursor()
     for row in cursor.execute("SELECT sid, name, mimetype, url, description \
-                               FROM Sources WHERE name = ? AND mimetype = ?", \
-                              (sourcename.lower(), basetype.lower())):
+                               FROM Sources WHERE name = ? AND mimetype = ?",
+                              (source_name.lower(), base_type.lower())):
       return Source(row[0], row[1], row[2], row[3], row[4])
 
     return None
@@ -41,17 +41,17 @@ class ProteinDB(object):
       raise Exception("Not a source")
 
     name = protein_name.lower()
-    print(source.get_id())
-    print(protein_name)
+    #print(source.get_id())
+    #print(protein_name)
 
     # Search in DB
     cursor = self.__database.cursor()
     for row in cursor.execute("SELECT pid, name, title, sid, date, model_date \
-                               FROM Proteins WHERE sid = ? AND name = ?", \
+                               FROM Proteins WHERE sid = ? AND name = ?",
                               (source.get_id(), name)):
       protein = Protein(row[0], row[1], row[2], source, row[4], row[5])
 
-      for row2 in cursor.execute("SELECT model FROM Models WHERE pid = ?", \
+      for row2 in cursor.execute("SELECT model FROM Models WHERE pid = ?",
                                  (protein.get_id(),)):
         protein.add_model(row2[0])
 
@@ -66,5 +66,6 @@ class ProteinDB(object):
       raise Exception("Not a protein")
 
     c = self.__database.cursor()
-    for model in c.execute("SELECT data FROM Models WHERE pid=? AND model=?", (protein.get_id(), mid)):
+    for model in c.execute("SELECT data FROM Models WHERE pid=? AND model=?",
+                           (protein.get_id(), mid)):
       return model[0]

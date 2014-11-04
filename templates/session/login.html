@@ -18,12 +18,11 @@ $("#form_login").submit(function(event) {{
 
   request = $.ajax({{
     type: "post",
-    data: to_send
+    data: to_send,
+    crossDomain: true,
+    xhrFields: {{ withCredentials: true }}
   }}).done(function(response, status, jqXHR) {{
-    hide_dialog();
-    var updated = document.open("text/html", "replace")
-    updated.write(response);
-    updated.close();
+    window.location.href = "{_root_}/";
   }}).fail(function(jqXHR, status, error) {{
     var text = "Failed. Try again.";
     if (jqXHR.status >= 500) {{

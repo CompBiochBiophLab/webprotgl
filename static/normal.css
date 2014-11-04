@@ -43,8 +43,45 @@ nav ul li.separator, nav ul li.separator:hover {
 nav ul li a {
   color: black;
   display: block;
-  padding: 5px 1em 5px 1em;
+  padding: 5px 1em;
   text-decoration: none;
+}
+
+nav ul li.nolink {
+  cursor: pointer;
+  padding: 5px 1em;
+}
+
+nav ul li.closed_group:before {
+  content: "▸ ";
+}
+
+nav ul li.closed_group ul {
+    display: none;
+}
+
+nav ul li.opened_group:before {
+  content: "▾ ";
+}
+
+nav ul li.opened_group:hover {
+  box-shadow: 2px 2px 2px #668877;
+}
+
+nav ul li.opened_group ul {
+    display: block;
+}
+
+nav ul li.opened_group ul li {
+  border-radius: 0;
+  box-shadow: 1px 1px 2px #668877;
+  font-size:small;
+  margin: 0.2em -0.5em;
+  padding: 0.1em 0.3em;
+}
+
+nav ul li.opened_group ul li:hover {
+  box-shadow: inset 1px 1px 2px #668877;
 }
 
 /** Basic layout, header & footer **/
@@ -81,6 +118,11 @@ footer {
 }
 
 /** Here starts the fun **/
+
+#canvas-protgl {
+    border: 1px solid black;
+    box-shadow: 0 0 5px #668877;
+}
 
 main {
   order: 2;

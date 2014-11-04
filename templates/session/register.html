@@ -20,10 +20,11 @@ $("#form_register").submit(function(event) {{
     type: "post",
     data: to_send
   }}).done(function(response, status, jqXHR) {{
-    hide_dialog();
+    /*hide_dialog();
     var updated = document.open("text/html", "replace")
     updated.write(response);
-    updated.close();
+    updated.close();*/
+    window.location.href = "{_root_}/{_session_}/{_registered_}";
   }}).fail(function(jqXHR, status, error) {{
     var text = "Error: Please verify your inputs and try again";
     if (jqXHR.status >= 500) {{

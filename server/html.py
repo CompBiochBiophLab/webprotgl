@@ -1,55 +1,58 @@
 """ HTML formatter for responses
 """
 
+import logging
 import os
 
 from database.dictionary import Dictionary
+from server.navigation import Navigation
 
-def html_format_template(path, user=None, nav=None, vars=None):
-  with open(os.path.join(os.environ["WORKDIR"], "templates", path)) as input:
-    return html_format_text(input.read(), user, nav, vars)
+
+def html_format_template(path, user=None, nav=None, variables=None):
+  with open(os.path.join(os.environ["WORKDIR"], "templates", path)) as temp:
+    return html_format_text(temp.read(), user, nav, variables)
   return None
+
 
 def html_format_file(name, title="", user=None, nav=None):
-  with open(os.path.join(os.environ["WORKDIR"], "templates", name + ".html")) as input:
-    vars = {"title": title}
-    return html_format_text(input.read(), user, nav, vars)
+  with open(os.path.join(os.environ["WORKDIR"], "templates",
+                         name + ".html")) as temp:
+    variables = {"title": title}
+    return html_format_text(temp.read(), user, nav, variables)
   return None
 
-def html_format_text(main, user=None, nav=None, vars=None):
-  if not vars:
-    vars = dict()
 
-  vars.update(Dictionary.all())
+def html_format_text(main, user=None, nav=None, variables=None):
+  if not variables:
+    variables = dict()
 
-  if "title" in vars:
-    vars["html_title"] = vars["title"] + " | " + vars["html_title"]
+  variables.update(Dictionary.all())
+
+  if "title" in variables:
+    variables["html_title"] = \
+        variables["title"] + " | " + variables["html_title"]
 
   # Navigation defaults
   if not nav:
-    nav = []
-  nav.insert(0, (Dictionary.format("{_root_}/"), Dictionary.get("home")))
+    nav = Navigation()
+  nav.add_link("{_root_}", "{home}", Navigation.HOME, 0)
   if not user:
     # Register
-    nav.insert(1, (Dictionary.format("{_root_}/{_session_}/{_register_}"), Dictionary.get("register")))
+    nav.add_link("{_root_}/{_session_}/{_register_}",
+                 "{register}", Navigation.HOME, 1)
     # Login
-    nav.insert(2, (Dictionary.format("{_root_}/{_session_}/{_login_}"), Dictionary.get("login"), "bottom"))
-    nav.insert(2, ())
+    nav.add_link("{_root_}/{_session_}/{_login_}",
+                 "{login}", Navigation.HOME, 2)
   else:
     # Logout
-    nav.append((Dictionary.format("{_root_}/{_session_}/{_logout_}"), Dictionary.get("logout"), "bottom"))
-  navigation = ""
-  for item in nav:
-    attr = ""
-    if len(item) < 2:
-      # Separation
-      navigation += "   <li class=\"separator\"></li>\n"
-    else:
-      navigation += "   <li><a href=\"{0}\">{1}</a></li>\n".format(item[0], item[1])
-  vars["html_nav"] = navigation
-  vars["html_main"] = Dictionary.format(main)
+    nav.add_link("{_root_}/{_session_}/{_logout_}",
+                 "{logout}", Navigation.LOGOUT, 0)
 
-  with open(os.path.join(os.environ["WORKDIR"], "templates", "backbone.html")) as backbone:
+  variables["html_nav"] = nav.flatten_to_html()
+  variables["html_main"] = Dictionary.format(main, variables)
+
+  with open(os.path.join(os.environ["WORKDIR"],
+                         "templates", "backbone.html")) as backbone:
     page = backbone.read()
-    return page.format(**vars).encode("UTF-8")
+    return Dictionary.format(page, variables).encode("UTF-8")
   return None

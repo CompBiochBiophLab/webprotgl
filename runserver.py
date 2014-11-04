@@ -10,7 +10,7 @@ import importlib
 import logging
 import traceback
 
-from database import database
+from database.database import Database
 from database.dictionary import Dictionary
 from server import html, post_parser, responder
 from wsgiref.simple_server import make_server
@@ -25,15 +25,11 @@ class RESTServer(object):
 
   def __init__(self):
     """ Initialise servers, regexes """
-    logging.basicConfig(filename=os.path.join(__here__, "webglprotein.log"), \
-      level=logging.DEBUG)
-    
-    self.__root = Dictionary.get("_base_path_")
-    self.__db = database.Database(os.path.join(__here__, "webglprotein.db"))
-    self.__server = responder.Responder(Dictionary.get("_protocol_"), \
-                                        Dictionary.get("_hostname_"), \
-                                        self.__root, \
-                                        int(Dictionary.get("_port_")))
+    logging.basicConfig(filename=os.path.join(__here__, "webglprotein.log"),
+        level=logging.DEBUG)
+
+    self.__db = Database(os.path.join(__here__, "webglprotein.db"))
+    self.__server = responder.Responder()
 
 ################################################################
 
@@ -46,12 +42,11 @@ class RESTServer(object):
     try:
       database = self.__db.connect()
       if "HTTP_COOKIE" in env:
-        #print(env["HTTP_COOKIE"])
-        args = post_parser.parse(data = env["HTTP_COOKIE"])
+        args = post_parser.parse(data=env["HTTP_COOKIE"])
         if args:
         #cookie = cookie.Cookie(client_string = env["HTTP_COOKIE"])
           user = database.users().find_session(args)
-        print(user)
+        logging.debug(user)
       
       # # Check there is a valid path
       # path = env["PATH_INFO"]
@@ -80,7 +75,7 @@ class RESTServer(object):
           if not path[0]:
             path[0] = "index.html"
           if path[0].endswith(".html"):
-            response.set_body(html.html_format_file(path[0][:-5]), "text/html")
+            response.set_html(path[0], user)
         else:
           module = importlib.import_module("server." + path[0])
           factory = getattr(module, path[0].title())

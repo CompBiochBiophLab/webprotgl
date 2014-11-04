@@ -18,7 +18,7 @@ class Cookie():
       port_txt = ""
       
     if domain == "localhost":
-      domain = "localhost.local"
+      domain = ""
     
     return "{0}={1}; Domain={2}; Path={3}{4}{5}".format(self.__name, self.__value, domain, path, expires, port_txt)
  

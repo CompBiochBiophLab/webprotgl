@@ -4,7 +4,7 @@ function static_path() {{
 }}
 
 function initial_protein() {{
-  return '{_root_}/{_protein_}/rcsb/pdb/{title}/1';
+  return '{_root_}/{_protein_}/rcsb/pdb/{__protein}/1';
 }}
 </script>
 <script type="text/javascript" src="{_root_}/{_static_}/webglprotein.js"></script>
@@ -20,9 +20,8 @@ function load_pdb(pdb_id) {{
 }}
 </script>
 <div id="protgl">
-<h1>{title}</h1>
 <div id="input">
-<input id="pdb_input" title="PDB to load (ex. 2KXR):" size="6" value="{title}" onkeyup="
+<input id="pdb_input" title="PDB to load (ex. 2KXR):" size="6" value="{__protein}" onkeyup="
 if (event.keyCode == 13) {{
 load_pdb(this.value);
 }}"/>

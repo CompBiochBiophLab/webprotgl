@@ -1,6 +1,7 @@
 """ A global dictionary of text variables
 """
 
+import logging
 import pickle
 
 class Dictionary(object):
@@ -42,7 +43,11 @@ class Dictionary(object):
   @staticmethod
   def format(value, variables=None):
     if variables:
+      temp = Dictionary.__singleton.copy()
+      temp.update(variables)
+      return value.format(**temp)
       variables.update(Dictionary.__singleton)
+      logging.debug(variables)
       return value.format(**variables)
     return value.format(**Dictionary.__singleton)
 

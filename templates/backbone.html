@@ -37,6 +37,20 @@ show_dialog = function(text, pos, neg) {{
 hide_dialog = function() {{
   $("#dialog").css("display", "none");
 }}
+
+toggle_nav_group = function(e) {{
+  if (e.target == e.currentTarget) {{
+    e.target.classList.toggle("closed_group");
+    e.target.classList.toggle("opened_group");
+  }}
+}}
+
+$(document).ready(function() {{
+  $(document).ready(function() {{
+    $(".closed_group").click(toggle_nav_group);
+  }});
+}});
+
  </script>
 </head>
 <body>

@@ -3,8 +3,10 @@
 import logging
 
 from server import responder
-from server.html import html_format_file
 from server.async.protein_downloader import ProteinGetter
+from server.html import html_format_file
+from server.navigation import Navigation
+
 
 class Protein(object):
   def __init__(self):
@@ -14,12 +16,12 @@ class Protein(object):
     response = responder.Response()
 
     server = path[1].lower()
-    format = path[2].lower()
+    in_fmt = path[2].lower()
     s_name = path[3].lower()
 
     protein_db = database.proteins()
 
-    source = protein_db.find_source(server, format)
+    source = protein_db.find_source(server, in_fmt)
     if not source:
       response.set_status_code(response.NOT_FOUND)
       return response
@@ -38,14 +40,14 @@ class Protein(object):
 
       if len(path) == 4:
         # Serve an html page for that protein!
-        return self.__serve_html(s_name, response)
+        return self.__serve_html(s_name, user, response)
 
       response.set_status_code(response.PROCESSING)
       return response
 
     if len(path) == 4:
       # Serve an html page for that protein!
-      return self.__serve_html(s_name, response)
+      return self.__serve_html(s_name, user, response)
 
     mid = path[4]
 
@@ -65,6 +67,15 @@ class Protein(object):
       response.set_body(model, "application/octet-stream")
     return response
 
-  def __serve_html(self, protein_name, response):
-    response.set_body(html_format_file("protein", protein_name.upper()), "text/html")
+  def __serve_html(self, protein_name, user, response):
+    nav = Navigation()
+    nav.add_link("", "Show", Navigation.DISPLAY, 0)
+    nav.add_link("", "van der Waals", Navigation.DISPLAY, 0, "Show")
+    nav.add_link("", "Balls & Sticks", Navigation.DISPLAY, 1, "Show")
+    variables = {
+      "html_title": protein_name.upper(),
+      "__protein": protein_name.upper()
+    }
+    response.set_html("protein.html", user, nav, variables)
+    #response.set_body(html_format_file("protein", protein_name.upper()), "text/html")
     return response

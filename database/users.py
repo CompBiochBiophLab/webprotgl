@@ -68,7 +68,7 @@ class UserDB(object):
         expires = datetime.strptime(s_row[0], "%Y-%m-%d %H:%M:%S.%f")
         if expires < datetime.now():
           cursor.execute("DELETE FROM Sessions WHERE eid = ?", (sid,))
-          self.__db.commit()
+          self.__database.commit()
           return None
         
         for row in cursor.execute(
@@ -92,7 +92,7 @@ class UserDB(object):
     cursor = self.__database.cursor()
       
     # Verify the registration was activated
-    for row in cursor.execute(
+    for _ in cursor.execute(
             self.__session_select + "WHERE email = ? AND state = ?",
             (email, self.SESSION_REGISTER)):
       logging.warning("Not activated yet")
@@ -164,6 +164,15 @@ class UserDB(object):
     self.__database.commit()
 
     return True
+
+################################################################
+
+  def revoke_session(self, user):
+    cursor = self.__database.cursor()
+    cursor.execute("DELETE FROM Sessions WHERE email = ? AND state = ?",
+                   (user.email(), self.SESSION_STANDARD))
+    self.__database.commit()
+    return Cookie("session", "", datetime.now())
 
 ################################################################
 

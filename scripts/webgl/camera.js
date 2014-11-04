@@ -18,7 +18,7 @@ function Camera(canvas)
       gl_.viewportHeight = canvas.height;
       gl_.viewport(0, 0, gl_.viewportWidth, gl_.viewportHeight);
 
-      gl_.clearColor(0.0, 0.5, 0.8, 1.0);
+      gl_.clearColor(0.95, 0.95, 1.0, 1.0);
       gl_.enable(gl_.DEPTH_TEST);
       gl_.blendFunc(gl_.SRC_ALPHA, gl_.ONE_MINUS_SRC_ALPHA);
 //      gl_.enable(gl_.BLEND);
