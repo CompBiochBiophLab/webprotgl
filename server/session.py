@@ -7,6 +7,7 @@ from server import responder
 from server.post_parser import parse
 from time import sleep
 
+
 class Session(object):
   def __init__(self):
     pass
@@ -17,7 +18,7 @@ class Session(object):
     method = env["REQUEST_METHOD"]
     response = responder.Response()
 
-    special_get = ["activate", "logout"]
+    special_get = ["activate", "logout", "reset"]
     if method == "POST" or path[1] in special_get:
       fun = getattr(self, path[1])
       if fun:
@@ -57,18 +58,17 @@ class Session(object):
   @staticmethod
   def login(env, _, user, database):
     response = responder.Response()
-    if user:
-      response.set_status_code(409)  # Conflict
-      return response
+    # if user:
+    #   response.set_status_code(409)  # Conflict
+    #   return response
 
     data = parse(env)
     (user, cookie) = database.users().find_user(data)
     if user:
       response.set_status_code(response.NO_CONTENT)
       response.set_cookie(cookie)
-      #response.set_redirect(Dictionary.format("{_root_}/"))
-    else:
-      sleep(2)  # Don't allow mass-spamming
+
+    sleep(2)  # Don't allow mass-spamming
     return response
 
 ################################################################
@@ -76,13 +76,29 @@ class Session(object):
   @staticmethod
   def logout(env, path, user, database):
     response = responder.Response()
-    if not user:
+    # if not user:
+    #   response.set_status_code(409)  # Conflict
+    #   return response
+
+    response.set_cookie(database.users().revoke_session(user))
+    response.set_redirect(Dictionary.format("{_root_}/{_session_}/{_login_}"))
+    return response
+
+################################################################
+
+  @staticmethod
+  def lost(env, _, user, database):
+    response = responder.Response()
+    if user:
       response.set_status_code(409)  # Conflict
       return response
 
-    #response.set_status_code(response.NO_CONTENT)
-    response.set_cookie(database.users().revoke_session(user))
-    response.set_redirect(Dictionary.format("{_root_}/{_session_}/{_login_}"))
+    data = parse(env)
+    if database.users().initiate_reset(data):
+      response.set_status_code(response.NO_CONTENT)
+
+    sleep(2)  # Don't allow mass-spamming
+
     return response
 
 ################################################################
@@ -97,10 +113,32 @@ class Session(object):
     data = parse(env)
     if database.users().register(data):
       response.set_status_code(response.NO_CONTENT)
-      #response.set_redirect(Dictionary.format(
-      #    "{_root_}/{_session_}/{_registered_}"))
-    else:
+
+    sleep(2)  # Don't allow mass-spamming
+    return response
+
+################################################################
+
+  @staticmethod
+  def reset(env, path, user, database):
+    response = responder.Response()
+    if user:
+      response.set_status_code(409)  # Conflict
+      return response
+
+    if env["REQUEST_METHOD"] == "POST":
+      data = parse(env)
+      if database.users().confirm_reset(path[-1], data):
+        response.set_status_code(response.NO_CONTENT)
+
       sleep(2)  # Don't allow mass-spamming
+    else:
+      # Check validity (expiration)
+      if database.users().reset_valid(path[-1]):
+        response.set_html("session/reset.html")
+      else:
+        response.set_status_code(response.GONE)
+
     return response
 
 ################################################################

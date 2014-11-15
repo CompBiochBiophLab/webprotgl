@@ -2,7 +2,7 @@
 $(document).ready(function() {{
 
 var request;
-$("#form_register").submit(function(event) {{
+$("#form_reset").submit(function(event) {{
   show_dialog("Processing...", "", "");
   event.preventDefault();
 
@@ -20,9 +20,14 @@ $("#form_register").submit(function(event) {{
     type: "post",
     data: to_send
   }}).done(function(response, status, jqXHR) {{
-    window.location.href = "{_root_}/{_session_}/{_registered_}";
+    text = "Password reset successfully.";
+    show_dialog(text, "ok", "").done(function(result) {{
+      hide_dialog();
+      $inputs.prop("disabled", false);
+      window.location.href = "{_root_}/{_session_}/{_login_}";
+    }});
   }}).fail(function(jqXHR, status, error) {{
-    var text = "Error: Please verify your inputs and try again";
+    var text = "Error: Failed to reset your password.";
     if (jqXHR.status >= 500) {{
       text = "Oops! An error occurred on our servers. Feel free to <a href=\"{_root_}/{_static_}/{_contact_}\">contact us</a> if this error persists.";
     }}
@@ -39,38 +44,12 @@ $("#form_register").submit(function(event) {{
 
 }});
 </script>
-<p>Thank you for your interest! You are only a few steps away from starting work with the web protein viewer.</p>
-<p>Simply provide us with your details below and click on the <em>Register</em> button.</p>
-<p>An email will then be sent to your mailbox. It will contain a link; by opening this link you will finish the registration and be able to start working straight away.</p>
-<form name="register" id="form_register" method="POST">
+<p>You can now change your password. Simply type the new password twice below.</p>
+<form name="register" id="form_reset" method="POST">
  <table>
   <tbody>
    <tr>
-    <td><label>Salutation:</label></td>
-    <td>
-     <select name="salutation" required="1">
-      <option value="">Please select</option>
-      <option value="Mr.">Mr.</option>
-      <option value="Mrs.">Mrs.</option>
-      <option value="Dr.">Dr.</option>
-      <option value="Prof.">Prof.</option>
-     </select>
-    </td>
-   </tr>
-   <tr>
-    <td><label>First name(s):</label></td>
-    <td><input pattern="\w+" name="first_name" type="text" required="1" /></td>
-   </tr>
-   <tr>
-    <td><label>Last name(s):</label></td>
-    <td><input pattern="\w+" name="last_name" type="text" required="1" /></td>
-   </tr>
-   <tr>
-    <td><label>Email address:</label></td>
-    <td><input name="email" type="email" required="1" /></td>
-   </tr>
-   <tr>
-    <td><label>Password (min. 8 chars):</label></td>
+    <th><label>Password (min. 8 chars):</label></th>
     <td><input pattern=".{{8,}}" name="password" type="password" required="1" /></td>
    </tr>
    <tr>

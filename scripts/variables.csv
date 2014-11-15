@@ -12,6 +12,8 @@
 ,"Link","_activate_","activate",,
 ,"Link","_logout_","logout",,
 ,"Link","_registered_","registered",,
+,"Link","_lost_","lost",,
+,"Link","_reset_","reset",,
 ,"Link","_login_","login",,
 ,"Link","_static_","static",,
 ,"Link","_contact_","contact.html",,
@@ -30,3 +32,5 @@
 ,"Server","_server_log_","proteins.log",,
 ,"Server","_server_db_","proteins.db",,
 ,"Email","mail_register_subject","Welcome to the Online Protein",,"Welcome to the Online Protein [Test]"
+,"Email","reset_timeout",30,,
+,"Email","mail_reset_subject","Online Protein – Reset your password",,

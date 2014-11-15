@@ -1,0 +1,14 @@
+Dear {__fullname},
+
+Someone (hopefully you) requested to reset your Online Protein password.
+
+If you changed your mind (or didn't request this reset), no worries. Simply ignore or, better, delete this email. In {reset_timeout} minutes the following link will become invalid.
+
+Otherwise simply open the following link and enter your new password. That's it!
+
+{_root_}/{_session_}/{_reset_}/{__reset_link}
+
+We hope to see you soon !
+
+The Online Protein team
+

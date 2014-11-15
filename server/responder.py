@@ -48,7 +48,7 @@ class Response(object):
     if mimetype:
       self.__mimetype = mimetype
 
-  def set_html(self, path, user, nav=None, variables=None):
+  def set_html(self, path, user=None, nav=None, variables=None):
     self.__body = html_format_template(path, user, nav, variables)
     if self.__body:
       self.__status = self.OK

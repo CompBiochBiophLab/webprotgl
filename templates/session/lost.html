@@ -1,0 +1,66 @@
+<script type="text/javascript">
+$(document).ready(function() {{
+
+var request;
+$("#form_lost").submit(function(event) {{
+  show_dialog("Processing...", "", "");
+  event.preventDefault();
+
+  if (request) {{
+    request.abort();
+  }}
+
+  var $form = $(this);
+  var $inputs = $form.find("input", "button");
+  var to_send = $form.serialize();
+
+  $inputs.prop("disabled", true);
+
+  request = $.ajax({{
+    type: "post",
+    data: to_send
+  }}).done(function(response, status, jqXHR) {{
+    text = "An email should arrive in the next few minutes with instructions how to finish resetting your password.";
+    show_dialog(text, "ok", "").done(function(result) {{
+      hide_dialog();
+      $inputs.prop("disabled", false);
+    }});
+  }}).fail(function(jqXHR, status, error) {{
+    var text = "Error: Please verify your inputs and try again";
+    if (jqXHR.status >= 500) {{
+      text = "Oops! An error occurred on our servers. Feel free to <a href=\"{_root_}/{_static_}/{_contact_}\">contact us</a> if this error persists.";
+    }}
+    // jqXHR: contains many functions, plus readyState (4), responseText (""), status (404), statusText ("- Not Found")
+    // status = "error"
+    // error = "- Not Found"
+    show_dialog(text, "ok", "").done(function(result) {{
+      hide_dialog();
+      $inputs.prop("disabled", false);
+    }});
+  }}).always(function() {{
+  }});
+}});
+
+}});
+</script>
+<p>Please enter your email address in the field below and click the button to initiate a password reset request.</p>
+<p>If the address exists in our database, you will receive further instructions by email (please allow for a few minutes before you receive the message).</p>
+<p>Note that for security reasons we unfortunately cannot show a confirmation whether the address exists or not.</p>
+<form name="register" id="form_lost" method="POST">
+ <table>
+  <tbody>
+   <tr>
+    <th><label>Email address:</label></th>
+    <td><input name="email" type="email" required="1" /></td>
+   </tr>
+   <tr class="hive">
+    <th><label>Password (min. 8 chars):</label></th>
+    <td><input pattern=".{{8,}}" name="password" type="password" /></td>
+   </tr>
+   <tr>
+    <td><label>Confirm:</label></td>
+    <td><button id="reset" type="submit">Reset</button></td>
+   </tr>
+  </tbody>
+ </table>
+</form>
