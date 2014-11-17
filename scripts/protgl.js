@@ -29,7 +29,7 @@ function OnlineProtein(static_path)
       var mm = new MovementManager(gCamera);
 
       // Load the shaders before continuing...
-      $.get(static_path + "/shaders.json", that.loadShaders);
+      $.get(static_path + "shaders.json", that.loadShaders);
     } catch (e) {
       alert(e);
     }
@@ -111,20 +111,20 @@ function OnlineProtein(static_path)
   //SNIP
   this.loadScripts = function() {
     var allScripts = [
-      "/static/jquery_binary.js",
-      "/static/base.js",
-      "/static/webgl/boundingbox.js",
-      "/static/webgl/camera.js",
-      "/static/webgl/fast.js",
-      /*"/static/webgl/mouse.js",*/
-      "/static/webgl/shader.js",
-      "/static/webgl/shaderparameter.js",
-      "/static/webgl/shape.js",
-      "/static/webgl/basicshapes.js",
-      "/static/webgl/transform.js",
-      "/static/webgl/movementmanager.js",
-      "/static/jdataview.js",
-      "/static/protein.js"];
+      "jquery_binary.js",
+      "base.js",
+      "webgl/boundingbox.js",
+      "webgl/camera.js",
+      "webgl/fast.js",
+      /*"webgl/mouse.js",*/
+      "webgl/shader.js",
+      "webgl/shaderparameter.js",
+      "webgl/shape.js",
+      "webgl/basicshapes.js",
+      "webgl/transform.js",
+      "webgl/movementmanager.js",
+      "jdataview.js",
+      "protein.js"];
     var totalScripts = allScripts.length;
     var loadedScripts = 0;
 
@@ -138,7 +138,7 @@ function OnlineProtein(static_path)
 
     for (script in allScripts)
     {
-      var url = allScripts[script];
+      var url = static_path + allScripts[script];
       var head = document.getElementsByTagName("head")[0];
       var script = document.createElement("script");
       script.type="text/javascript";
