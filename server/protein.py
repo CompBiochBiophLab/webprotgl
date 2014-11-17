@@ -12,7 +12,7 @@ class Protein(object):
   def __init__(self):
     pass
 
-  def serve(self, env, path, user, database):
+  def serve(self, _env, path, user, database):
     response = responder.Response()
 
     server = path[1].lower()
@@ -73,8 +73,10 @@ class Protein(object):
     nav.add_link("", "van der Waals", Navigation.DISPLAY, 0, "Show")
     nav.add_link("", "Balls & Sticks", Navigation.DISPLAY, 1, "Show")
     variables = {
-      "html_title": protein_name.upper(),
-      "__protein": protein_name.upper()
+        "html_title": protein_name.upper(),
+        "__protein": protein_name.upper(),
+        "__canvas_width": 500,
+        "__canvas_height": 500
     }
     response.set_html("protein.html", user, nav, variables)
     #response.set_body(html_format_file("protein", protein_name.upper()), "text/html")

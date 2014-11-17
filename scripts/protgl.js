@@ -1,66 +1,27 @@
 //<script>
 
-function WebGLProtein()
+function OnlineProtein()
 {
-  this.loadpdb = function(url, onSuccess, onFinished, onFailure) {
-    console.log("Looking for protein " + url);
-    $.ajax({ type: "GET", dataType: "binary", url: url, timeout: 60000,
-             success: function(data, textStatus) { onSuccess(); pdbreader(data); onFinished(); },
-             error: function(xhr, textStatus, errorThrown) { onFailure(xhr); }
-    });
+  var that = this;
+  var current_url = "";
+  var isAnimating_ = false;
+
+  var sphere_;
+  var sphereShader_;
+  var cylinder_;
+  var cylinderShader_;
+
+  //var lastFrame_ = new Date();
+
+  function animate() {
+    gCamera.display();
+    requestAnimationFrame(animate);
+    //this_frame = new Date();
+    //console.log(this_frame.getTime() - lastFrame_.getTime());
+    //lastFrame_ = this_frame;
   }
 
-  //SNIP
-  var loadedScripts_ = 0;
-
-  var onScriptsLoaded = function()
-  {
-    ++loadedScripts_;
-    if (loadedScripts_ < totalScripts_)
-      return;
-
-    protgl_start();
-  }
-
-  var loadScript = function(url)
-  {
-    var head = document.getElementsByTagName("head")[0];
-    var script = document.createElement("script");
-    script.type="text/javascript";
-    script.src=url;
-
-    // Cross-browser compatibility
-    script.onreadystatechange = onScriptsLoaded;
-    script.onload = onScriptsLoaded;
-
-    // Start loading
-    head.appendChild(script);
-  }
-
-  var allScripts_ = [
-    "/static/jquery_binary.js",
-    "/static/base.js",
-    "/static/webgl/boundingbox.js",
-    "/static/webgl/camera.js",
-    "/static/webgl/fast.js",
-    /*"/static/webgl/mouse.js",*/
-    "/static/webgl/shader.js",
-    "/static/webgl/shaderparameter.js",
-    "/static/webgl/shape.js",
-    "/static/webgl/basicshapes.js",
-    "/static/webgl/transform.js",
-    "/static/webgl/movementmanager.js",
-    "/static/jdataview.js",
-    "/static/protein.js"];
-  var totalScripts_ = allScripts_.length;
-
-  for (script in allScripts_)
-  {
-    loadScript(allScripts_[script]);
-  }
-  //SNAP
-
-  function protgl_start() {
+  this.initWebGL = function() {
     try
     {
       var canvas = document.getElementById("canvas-protgl");
@@ -68,13 +29,17 @@ function WebGLProtein()
       var mm = new MovementManager(gCamera);
 
       // Load the shaders before continuing...
-      $.get(static_path() + "/shaders.json", shaders);
+      $.get(static_path() + "/shaders.json", that.loadShaders);
     } catch (e) {
       alert(e);
     }
   }
 
-  function shaders(shader) {
+  this.loadScripts = function() {
+    initWebGL();
+  }
+
+  this.loadShaders = function(shader) {
     var refinements = 2; // 3;
 
     sphereShader_ = new Shader(gCamera.getGLContext());
@@ -85,10 +50,30 @@ function WebGLProtein()
     cylinderShader_.init(shader["cylinder"]["v"], shader["cylinder"]["f"]);
     cylinder_ = createGLOpenCylinder(gCamera.getGLContext(), Math.pow(2, refinements) * 4, 4);
 
-    $.get(initial_protein(), pdbreader, "binary");
+
+    $.ajax({
+      url: current_url,
+      dataType: "binary",
+      success: parseProtein,
+      error: function() {
+        hide_dialog();
+        show_dialog("No such protein found.", "ok", "").done(function(result) {
+          hide_dialog();
+        });
+      }
+    });
   }
 
-  function pdbreader(pdb) {
+  this.onStart = function(base_url) {
+    show_dialog("Requesting protein. Please wait...", "", "");
+
+    // Prepare scripts, WebGL, ...
+    current_url = base_url;
+    that.loadScripts();
+  }
+
+  function parseProtein(pdb) {
+    hide_dialog();
     console.log("Protein found. Displaying");
     var root = gCamera.getGLScene();
     root.clear() // Replace with creating new child?
@@ -123,25 +108,54 @@ function WebGLProtein()
     }
   }
 
-  function animate() {
-    gCamera.display();
-    requestAnimationFrame(animate);
+  //SNIP
+  this.loadScripts = function() {
+    var allScripts = [
+      "/static/jquery_binary.js",
+      "/static/base.js",
+      "/static/webgl/boundingbox.js",
+      "/static/webgl/camera.js",
+      "/static/webgl/fast.js",
+      /*"/static/webgl/mouse.js",*/
+      "/static/webgl/shader.js",
+      "/static/webgl/shaderparameter.js",
+      "/static/webgl/shape.js",
+      "/static/webgl/basicshapes.js",
+      "/static/webgl/transform.js",
+      "/static/webgl/movementmanager.js",
+      "/static/jdataview.js",
+      "/static/protein.js"];
+    var totalScripts = allScripts.length;
+    var loadedScripts = 0;
+
+    var onScriptLoaded = function() {
+      ++loadedScripts;
+      if (loadedScripts < totalScripts)
+        return;
+
+      that.initWebGL();
+    }
+
+    for (script in allScripts)
+    {
+      var url = allScripts[script];
+      var head = document.getElementsByTagName("head")[0];
+      var script = document.createElement("script");
+      script.type="text/javascript";
+      script.src=url;
+
+      // Cross-browser compatibility
+      script.onreadystatechange = onScriptLoaded;
+      script.onload = onScriptLoaded;
+
+      // Start loading
+      head.appendChild(script);
+    }
   }
+  //SNAP
 
-  var sphere_;
-  var sphereShader_;
-  var cylinder_;
-  var cylinderShader_;
-  var isAnimating_ = false;
-  //SNIP
-  /*
-  //SNAP
-  protgl_start();
-  //SNIP
-  */
-  //SNAP
 }
-
+/*
 WebGLProtein.prototype.getScene = function() {
   return gCamera.getGLScene();
 }
@@ -151,3 +165,4 @@ WebGLProtein.prototype.show = function(visibility) {
 }
 
 window["WebGLProtein"] = WebGLProtein;
+*/

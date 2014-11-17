@@ -48,6 +48,29 @@ function TargetRotationHandler(camera, target, position, baseHandler)
   tdl.fast.normalize(right0_, right0_);
 }
 
+function relativePosition(context, mouse)
+{
+  var offset_parent = context.canvas.offsetParent;
+  var x = mouse.clientX - context.canvas.offsetLeft;
+  var y = mouse.clientY - context.canvas.offsetTop;
+  if (offset_parent) {
+    x -= offset_parent.offsetLeft;
+    y -= offset_parent.offsetTop;
+  }
+  return [x, y];
+}
+
+function withinCanvas(camera, mouse)
+{
+  var context = camera.getGLContext();
+  rel_pos = relativePosition(context, mouse);
+  if (rel_pos[0] < 0. || rel_pos[1] < 0.)
+    return false;
+  if (rel_pos[0] > context.viewportWidth || rel_pos[1] > context.viewportHeight)
+    return false;
+  return true;
+}
+
 function CameraMovementManager(camera, stepSize)
 {
   this.onActivate = function(mouse) {
@@ -61,7 +84,8 @@ function CameraMovementManager(camera, stepSize)
       case "down":
         switch (mouse.button) {
           case 0: // Left
-            camera_.setMouseHandler(new TargetRotationHandler(camera_, target_.getBarycenter(), [mouse.screenX, mouse.screenY], that));
+            if (withinCanvas(camera_, mouse))
+              camera_.setMouseHandler(new TargetRotationHandler(camera_, target_.getBarycenter(), [mouse.screenX, mouse.screenY], that));
             break;
           case 1: // Middle
             break;
@@ -73,9 +97,8 @@ function CameraMovementManager(camera, stepSize)
         var context = camera_.getGLContext();
         var w = context.viewportWidth;
         var h = context.viewportHeight;
-        var x = mouse.clientX - context.canvas.offsetLeft;
-        var y = mouse.clientY - context.canvas.offsetTop;
-        camera_.castRay([(2. * x / w) - 1., 1. - (2. * y / h)]);
+        var rel_pos = relativePosition(context, mouse);
+        camera_.castRay([(2. * rel_pos[0] / w) - 1., 1. - (2. * rel_pos[1] / h)]);
         break;
     }
   }

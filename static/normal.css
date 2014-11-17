@@ -119,9 +119,20 @@ footer {
 
 /** Here starts the fun **/
 
+#canvas {
+  display: inline-block;
+}
+
 #canvas-protgl {
-    border: 1px solid black;
-    box-shadow: 0 0 5px #668877;
+  box-shadow: 0 0 5px #668877;
+}
+
+#scripting {
+  display: inline-block;
+}
+
+#scripter {
+  resize: none;
 }
 
 main {

@@ -26,9 +26,6 @@ $("#form_register").submit(function(event) {{
     if (jqXHR.status >= 500) {{
       text = "Oops! An error occurred on our servers. Feel free to <a href=\"{_root_}/{_static_}/{_contact_}\">contact us</a> if this error persists.";
     }}
-    // jqXHR: contains many functions, plus readyState (4), responseText (""), status (404), statusText ("- Not Found")
-    // status = "error"
-    // error = "- Not Found"
     show_dialog(text, "ok", "").done(function(result) {{
       hide_dialog();
       $inputs.prop("disabled", false);

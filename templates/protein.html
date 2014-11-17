@@ -1,3 +1,4 @@
+<script type="text/javascript" src="{_root_}/{_static_}/webglprotein.js"></script>
 <script type="text/javascript">
 function static_path() {{
   return '{_root_}/{_static_}';
@@ -6,46 +7,22 @@ function static_path() {{
 function initial_protein() {{
   return '{_root_}/{_protein_}/rcsb/pdb/{__protein}/1';
 }}
+
+$(document).ready(function() {{
+  var protgl = new OnlineProtein();
+  protgl.onStart(document.URL + "/1");
+}});
 </script>
-<script type="text/javascript" src="{_root_}/{_static_}/webglprotein.js"></script>
-<script type="text/javascript">
-function load_pdb(pdb_id) {{
-  var popup = document.getElementById("popup");
-  popup.innerHTML = "Looking for protein <b>" + pdb_id + "</b>...";
-  popup.style.display = "block";
-  protgl.loadpdb(pdb_id,
-  function() {{ popup.innerHTML = "Protein <b>" + pdb_id + "</b> found, displaying..."; }},
-  function() {{ popup.style.display = "none"; }},
-  function(xhr) {{ alert("Problem retrieving protein" + pdb_id); popup.style.display = "none"; }});
-}}
-</script>
-<div id="protgl">
-<div id="input">
-<input id="pdb_input" title="PDB to load (ex. 2KXR):" size="6" value="{__protein}" onkeyup="
-if (event.keyCode == 13) {{
-load_pdb(this.value);
-}}"/>
-<input type="submit" title="Load PDB from RSCB" value="Load PDB" onclick="
-var input = document.getElementById('pdb_input');
-var url = '{_root_}/{_protein_}/rcsb/pdb/'+input.value+'/1';
-load_pdb(url)"/>
+
+<!--<div id="protgl">-->
+<div id="canvas">
+  <canvas id="canvas-protgl" width="{__canvas_width}px" height="{__canvas_height}px"></canvas>
 </div>
-<div id="commands">
-<div class="action" onclick="
-var visible = protgl.getScene().getVisibility();
-if (visible) {{
-this.innerHTML = 'Show';
-protgl.show(false);
-}} else {{
-this.innerHTML = 'Hide';
-protgl.show(true);
-}}">Hide</div>
-<!--
-<div class="action" onclick="protgl.balls_sticks()">Balls &amp; Sticks</div>
-<div class="action" onclick="this.innerHTML='Baby'">Hey</div>
--->
+<div id="scripting" height="{__canvas_height}px">
+  <textarea id="scripter" readonly="readonly"></textarea>
+  <form id="">
+
+  </form>
 </div>
-<div id="popup">Popup</div>
-<canvas id='canvas-protgl' style="border: none;" width="500" height="500"></canvas>
-<script type="text/javascript"> var protgl = new WebGLProtein(); </script>
-</div>
+<!--<script type="text/javascript">  </script>-->
+<!--</div>-->
