@@ -1,6 +1,6 @@
 //<script>
 
-function OnlineProtein()
+function OnlineProtein(static_path)
 {
   var that = this;
   var current_url = "";
@@ -29,7 +29,7 @@ function OnlineProtein()
       var mm = new MovementManager(gCamera);
 
       // Load the shaders before continuing...
-      $.get(static_path() + "/shaders.json", that.loadShaders);
+      $.get(static_path + "/shaders.json", that.loadShaders);
     } catch (e) {
       alert(e);
     }

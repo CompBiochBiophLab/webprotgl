@@ -119,8 +119,12 @@ footer {
 
 /** Here starts the fun **/
 
+#display {
+  display: flex;
+}
+
 #canvas {
-  display: inline-block;
+  order: 1;
 }
 
 #canvas-protgl {
@@ -128,11 +132,16 @@ footer {
 }
 
 #scripting {
-  display: inline-block;
+  flex: 1 0 auto;
+  order: 2;
+  padding-left: 1em;
+  padding-right: 1em;
 }
 
 #scripter {
+  height: 98%;
   resize: none;
+  width: 100%;
 }
 
 main {

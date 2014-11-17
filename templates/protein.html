@@ -1,28 +1,17 @@
 <script type="text/javascript" src="{_root_}/{_static_}/webglprotein.js"></script>
 <script type="text/javascript">
-function static_path() {{
-  return '{_root_}/{_static_}';
-}}
-
-function initial_protein() {{
-  return '{_root_}/{_protein_}/rcsb/pdb/{__protein}/1';
-}}
-
 $(document).ready(function() {{
-  var protgl = new OnlineProtein();
+  var protgl = new OnlineProtein("{_root_}/{_static_}");
   protgl.onStart(document.URL + "/1");
 }});
 </script>
 
-<!--<div id="protgl">-->
-<div id="canvas">
+<div id="display">
+ <div id="canvas">
   <canvas id="canvas-protgl" width="{__canvas_width}px" height="{__canvas_height}px"></canvas>
-</div>
-<div id="scripting" height="{__canvas_height}px">
-  <textarea id="scripter" readonly="readonly"></textarea>
-  <form id="">
+ </div>
 
-  </form>
+ <div id="scripting">
+  <textarea id="scripter" readonly="readonly"></textarea>
+ </div>
 </div>
-<!--<script type="text/javascript">  </script>-->
-<!--</div>-->
