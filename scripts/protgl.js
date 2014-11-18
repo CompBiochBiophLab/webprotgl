@@ -155,14 +155,15 @@ function OnlineProtein(static_path)
   //SNAP
 
 }
-/*
-WebGLProtein.prototype.getScene = function() {
+
+// Not sure why I have these?
+OnlineProtein.prototype.getScene = function() {
   return gCamera.getGLScene();
 }
 
-WebGLProtein.prototype.show = function(visibility) {
+OnlineProtein.prototype.show = function(visibility) {
   gCamera.getGLScene().setVisibility(visibility);
 }
 
-window["WebGLProtein"] = WebGLProtein;
-*/
+window["OnlineProtein"] = OnlineProtein;
+

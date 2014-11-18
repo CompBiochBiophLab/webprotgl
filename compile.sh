@@ -48,9 +48,6 @@ for source in paths:
     dest = path.join(root, source)
   if path.isfile(source):
     print("Copying file " + source + " to " + dest)
-#    if source == "templates":
-#      # Pre-format files
-#
     shutil.copy(source, dest)
   else:
     print("Copying folder " + source)
@@ -60,13 +57,23 @@ for source in paths:
 
 # Update static files
 print("Updating javascript")
-js_in = ["jquery_binary.js", "base.js", \
-  "webgl/boundingbox.js", "webgl/camera.js", "webgl/fast.js", \
-  "webgl/shader.js", "webgl/shaderparameter.js", "webgl/shape.js", \
-  "webgl/basicshapes.js", "webgl/transform.js", "webgl/movementmanager.js", \
-  "jdataview.js", "protein.js"]
+js_in = [
+  "jquery_binary.js",
+  "base.js",
+  "webgl/boundingbox.js",
+  "webgl/camera.js",
+  "webgl/fast.js",
+  "webgl/shader.js",
+  "webgl/shaderparameter.js",
+  "webgl/shape.js",
+  "webgl/basicshapes.js",
+  "webgl/transform.js",
+  "webgl/movementmanager.js",
+  "jdataview.js",
+  "protein.js"
+  ]
 js_last = "protgl.js"
-js_out = "webglprotein.js"
+js_out = "onlineprotein.js"
 if root == "testing":
   js_in.append(js_last)
   for script in js_in:
@@ -107,6 +114,10 @@ else:
   if exec.returncode != 0:
     print("Failed to uglify my js!")
     exit(0)
+
+  raw = js_out[:-2] + "raw"
+  if path.isfile(raw):
+    os.remove(raw)
 
 print("Updating shaders") # -> shaders.json
 with open(os.path.join(root, "static", "shaders.json"), "w") as output:
