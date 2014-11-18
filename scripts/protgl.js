@@ -11,6 +11,43 @@ function OnlineProtein(static_path)
   var cylinder_;
   var cylinderShader_;
 
+  function Logger() {
+    var that = this;
+    var output_ = $("#scripter");
+    var infos_ = [];
+    var debugs_ = [];
+
+    this.info = function(message) {
+      infos_.push(message);
+      that.update();
+    }
+
+    this.debug = function(message) {
+      debugs_.push(message);
+      that.update();
+    }
+
+    this.update = function() {
+      var text = ""
+      //SNIP
+      if (debugs_.length > 0) {
+        text += "*** DEBUG ***\n";
+        for (i in debugs_) {
+          text += debugs_[i] + "\n";
+        }
+      }
+      //SNAP
+      if (infos_.length > 0) {
+        text += "*** INFORMATION ***\n";
+        for (i in infos_) {
+          text += infos_[i] + "\n";
+        }
+      }
+      output_.val(text);
+    }
+  }
+  var logger_ = new Logger();
+
   //var lastFrame_ = new Date();
 
   function animate() {
@@ -36,7 +73,7 @@ function OnlineProtein(static_path)
   }
 
   this.loadScripts = function() {
-    initWebGL();
+    that.initWebGL();
   }
 
   this.loadShaders = function(shader) {
@@ -84,7 +121,7 @@ function OnlineProtein(static_path)
     var cylinderRoot = root.addChild();
     cylinderRoot.setShader(cylinderShader_);
 
-    var protein = new Protein();
+    var protein = new Protein(logger_);
     protein.parse(pdb, sphereRoot, sphere_, cylinderRoot, cylinder_);
     protein.setID("Asdf");
 

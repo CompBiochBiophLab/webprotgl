@@ -422,7 +422,7 @@ function Chain()
 
 ////////////////////////////////////////////////////////////////
 
-function Protein()
+function Protein(logger)
 {
   var sphereRoot_;
   var cylinderRoot_;
@@ -443,23 +443,23 @@ function Protein()
     var version = buffer.getUint16(offset, true);
     offset += 2;
 
-    console.log("Version " + version);
+    logger.debug("Version " + version);
 
     // # Sequences: ui8
     var totSequences = buffer.getUint8(offset);
     offset += 1;
-    console.log(totSequences + " sequences");
+    logger.debug(totSequences + " sequences");
 
     for (var seq = 0; seq < totSequences; ++seq) {
       // Char: ID
       var sid = buffer.getChar(offset);
       offset += 1;
-      console.log("Sequence " + sid);
+      logger.info("Sequence " + sid);
 
       // Type of sequence: Protein=0, DNA=1, RNA=2
       var stype = buffer.getUint8(offset);
       offset += 1;
-      console.log("Type " + stype);
+      logger.debug("Type " + stype);
 
       offset = this.__parseProtein(sid, buffer, offset, sphereRoot_, sphere, cylinderRoot_, cylinder);
       break;
@@ -476,7 +476,8 @@ function Protein()
       
     var sequence = buffer.getString(totRes, offset);
     offset += totRes;
-    console.log(sequence);
+    logger.info("Sequence (" + sequence.length + " aminos):");
+    logger.info(sequence);
 
     // Total heterogens
     var totHetero = buffer.getUint16(offset, true);
