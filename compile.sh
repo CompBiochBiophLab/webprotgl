@@ -58,7 +58,7 @@ for source in paths:
 # Update static files
 print("Updating javascript")
 js_in = [
-  "jquery_binary.js",
+  # "jquery_binary.js",
   "base.js",
   "webgl/boundingbox.js",
   "webgl/camera.js",

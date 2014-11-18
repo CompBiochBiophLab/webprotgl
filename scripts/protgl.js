@@ -54,13 +54,14 @@ function OnlineProtein(static_path)
     $.ajax({
       url: current_url,
       dataType: "binary",
-      success: parseProtein,
-      error: function() {
+      processData: false,
+      responseType: "arraybuffer",
+      success: parseProtein
+    }).fail(function(jqXHR, status, error) {
         hide_dialog();
         show_dialog("No such protein found.", "ok", "").done(function(result) {
           hide_dialog();
         });
-      }
     });
   }
 
@@ -111,7 +112,7 @@ function OnlineProtein(static_path)
   //SNIP
   this.loadScripts = function() {
     var allScripts = [
-      "jquery_binary.js",
+      /*"jquery_binary.js",*/
       "base.js",
       "webgl/boundingbox.js",
       "webgl/camera.js",
@@ -155,7 +156,7 @@ function OnlineProtein(static_path)
   //SNAP
 
 }
-
+/*
 // Not sure why I have these?
 OnlineProtein.prototype.getScene = function() {
   return gCamera.getGLScene();
@@ -166,4 +167,4 @@ OnlineProtein.prototype.show = function(visibility) {
 }
 
 window["OnlineProtein"] = OnlineProtein;
-
+*/
