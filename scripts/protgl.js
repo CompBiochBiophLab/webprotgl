@@ -3,7 +3,8 @@
 function OnlineProtein(static_path)
 {
   var that = this;
-  var current_url = "";
+  var current_url_ = "";
+  var current_name_ = "";
   var isAnimating_ = false;
 
   var sphere_;
@@ -14,34 +15,24 @@ function OnlineProtein(static_path)
   function Logger() {
     var that = this;
     var output_ = $("#scripter");
-    var infos_ = [];
-    var debugs_ = [];
+    var messages_ = [];
 
     this.info = function(message) {
-      infos_.push(message);
+      messages_.push("**INFO** " + message);
       that.update();
     }
 
     this.debug = function(message) {
-      debugs_.push(message);
+      //SNIP
+      messages_.push("**DEBUG** " + message);
       that.update();
+      //SNAP
     }
 
     this.update = function() {
       var text = ""
-      //SNIP
-      if (debugs_.length > 0) {
-        text += "*** DEBUG ***\n";
-        for (i in debugs_) {
-          text += debugs_[i] + "\n";
-        }
-      }
-      //SNAP
-      if (infos_.length > 0) {
-        text += "*** INFORMATION ***\n";
-        for (i in infos_) {
-          text += infos_[i] + "\n";
-        }
+      for (i in messages_) {
+        text += messages_[i] + "\n";
       }
       output_.val(text);
     }
@@ -89,7 +80,7 @@ function OnlineProtein(static_path)
 
 
     $.ajax({
-      url: current_url,
+      url: current_url_,
       dataType: "binary",
       processData: false,
       responseType: "arraybuffer",
@@ -106,13 +97,16 @@ function OnlineProtein(static_path)
     show_dialog("Requesting protein. Please wait...", "", "");
 
     // Prepare scripts, WebGL, ...
-    current_url = base_url;
+    current_url_ = base_url + "/1";
+    current_name_ = base_url.substr(base_url.lastIndexOf("/")+1);
+    set_header(current_name_);
+    logger_.debug(current_name_);
     that.loadScripts();
   }
 
   function parseProtein(pdb) {
     hide_dialog();
-    console.log("Protein found. Displaying");
+    logger_.debug("Protein found. Displaying");
     var root = gCamera.getGLScene();
     root.clear() // Replace with creating new child?
 
@@ -123,7 +117,7 @@ function OnlineProtein(static_path)
 
     var protein = new Protein(logger_);
     protein.parse(pdb, sphereRoot, sphere_, cylinderRoot, cylinder_);
-    protein.setID("Asdf");
+    protein.setID(current_name_);
 
     protein.print();
 

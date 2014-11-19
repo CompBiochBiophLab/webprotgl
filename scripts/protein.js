@@ -477,12 +477,21 @@ function Protein(logger)
     var sequence = buffer.getString(totRes, offset);
     offset += totRes;
     logger.info("Sequence (" + sequence.length + " aminos):");
-    logger.info(sequence);
+    for (var i = 0; i < sequence.length; i += 10) {
+      var end = i + 10;
+      var spaces = " ";
+      if (end > sequence.length) {
+        for (var j = sequence.length; j < end; ++j)
+          spaces += " ";
+        end = sequence.length;
+      }
+      logger.info(sequence.substring(i, end) + spaces + "[" + (i+1) + " - " + end + "]");
+    }
 
     // Total heterogens
     var totHetero = buffer.getUint16(offset, true);
     offset += 2;
-    console.log(totHetero + " heterogens");
+    logger.debug(totHetero + " heterogens");
     for (var het = 0; het < totHetero; ++het)
     {
       var hetNameLen = buffer.getUint16(offset, true);
@@ -491,13 +500,13 @@ function Protein(logger)
       offset += hetNameLen;
       var hetAtoms = buffer.getUint8(offset);
       offset += 1;
-      console.log(hetName + " with " + hetAtoms + " atoms");
+      logger.debug(hetName + " with " + hetAtoms + " atoms");
     }
 
     // Total atoms
     var totAtoms = buffer.getInt32(offset, true);
     offset += 4;
-    console.log(totAtoms + " atoms");
+    logger.debug(totAtoms + " atoms");
 
     var sum = 0;
     var prevAmino = null;
@@ -519,11 +528,12 @@ function Protein(logger)
       amino.addBonds(trf2, cylinder, prevAmino, trf);
       prevAmino = trf;
     }
-    console.log(sum);
+    //console.log(sum);
     return offset;
   }
 
   this.print = function() {
+    logger.info("Protein " + id_);
     //console.log(id_);
     for (c in chains_) {
       chains_[c].print();

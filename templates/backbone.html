@@ -46,6 +46,10 @@ toggle_nav_group = function(e) {{
   }}
 }}
 
+set_header = function(text) {{
+  $(":header").html(text);
+}}
+
 $(document).ready(function() {{
   $(document).ready(function() {{
     $(".closed_group").click(toggle_nav_group);
