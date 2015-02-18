@@ -4,7 +4,9 @@
 
 function AminoAcid()
 {
-  this.addAtom = function(x, y, z, root, sphere, colour) {
+  var atoms_ = [];
+
+  this.addAtom = function(x, y, z, root, sphere, colour, attributes) {
     if (x > 1e10) {
       console.log(x);
       return;
@@ -14,6 +16,9 @@ function AminoAcid()
     trf.addShape(sphere);
     trf.setParameter("colour", createVectorParameter(colour));
     trf.setParameter("radius", createFloatParameter(0.5));
+    for (key in attributes) {
+      trf.setAttribute(key, attributes[key]);
+    }
   }
 
   this.addBonds = function(root, cylinder, prevAmino, atoms) {
@@ -416,6 +421,10 @@ function Chain()
     return amino;
   }
 
+  this.getAminos = function() {
+    return aminos_;
+  }
+
   this.print = function() {
   }
 }
@@ -426,6 +435,16 @@ function Protein(logger)
 {
   var sphereRoot_;
   var cylinderRoot_;
+
+  var that = this;
+  var bbox_ = new BBox();
+  var chains_ = {};
+  var id_;
+  var current_selection_;
+
+  this.getChains = function() {
+    return chains_;
+  }
 
   this.getBarycenter = function() {
     return sphereRoot_.getBoundingBox().getCenter();
@@ -513,7 +532,7 @@ function Protein(logger)
     for (var res = 0; res < totRes; ++res) {
       var amino = chain.addAminoAcid1(sequence[res]);
       var trf = amino.prepareTransform(sphereRoot);
-//      console.log(amino.getSize());
+
       for (var atom = 0; atom < amino.getSize(); ++atom) {
         var x = buffer.getFloat32(offset, true);
         offset += 4;
@@ -521,7 +540,8 @@ function Protein(logger)
         offset += 4;
         var z = buffer.getFloat32(offset, true);
         offset += 4;
-        amino.addAtom(x, y, z, trf, sphere, amino.getAtomInfo(atom));
+        attr = {"protein": "TODO PROTEIN NAME"};
+        amino.addAtom(x, y, z, trf, sphere, amino.getAtomInfo(atom), attr);
         ++sum;
       }
       var trf2 = cylinderRoot.addChild();
@@ -530,6 +550,19 @@ function Protein(logger)
     }
     //console.log(sum);
     return offset;
+  }
+
+  this.show_VdW = function() {
+    sel = currentSelection();
+    sel2 = that.currentSelection();
+    for (c in chains_) {
+      chain = chains_[c];
+      /*
+      for (amino in chain.aminos_) {
+        logger.debug(amino);
+      }
+      */
+    }
   }
 
   this.print = function() {
@@ -544,10 +577,9 @@ function Protein(logger)
     id_ = id;
   }
 
-  var that = this;
-  var bbox_ = new BBox();
-  var chains_ = {};
-  var id_;
+  this.currentSelection = function() {
+    return current_selection_;
+  }
 
 
 ////////////////////////////////////////////////////////////////

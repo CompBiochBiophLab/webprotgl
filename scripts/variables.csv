@@ -21,7 +21,7 @@
 ,"Link","_register_","register",,
 ,"Link","_protein_","protein",,
 ,"Server","_hostname_","www.jrenggli.com","www.jrenggli.com","localhost"
-,"Server","_protocol_","https","http","http"
+,"Server","_protocol_","https","https","http"
 ,"Server","_email_port_",25,,
 ,"Server","_email_server_","smtp.jrenggli.com",,"localhost"
 ,"Server","_email_password_","test",,

@@ -70,8 +70,8 @@ class Protein(object):
   def __serve_html(self, protein_name, user, response):
     nav = Navigation()
     nav.add_link("", "Show", Navigation.DISPLAY, 0)
-    nav.add_link("", "van der Waals", Navigation.DISPLAY, 0, "Show")
-    nav.add_link("", "Balls & Sticks", Navigation.DISPLAY, 1, "Show")
+    nav.add_link("", "van der Waals", Navigation.DISPLAY, 0, "Show", {"show": "vdw"})
+    nav.add_link("", "Balls & Sticks", Navigation.DISPLAY, 1, "Show", {"show": "balls"})
     variables = {
         "html_title": protein_name.upper(),
         "__protein": protein_name.upper(),

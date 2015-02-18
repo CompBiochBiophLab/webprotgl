@@ -15,6 +15,7 @@ function Transform()
   var shapes_ = [];
   var children_ = [];
   var params_ = {};
+  var attributes_ = {};
 
 ////////////////////////////////////////////////////////////////
 
@@ -34,6 +35,18 @@ function Transform()
     if (bbox_.includeBBox(shape.getBoundingBox().multiply(world_)) && parent_) {
       parent_.updateBoundingBox(true);
     }
+  }
+
+////////////////////////////////////////////////////////////////
+
+  this.getAttribute = function(key) {
+    return attributes_[key];
+  }
+
+////////////////////////////////////////////////////////////////
+
+  this.setAttribute = function(key, value) {
+    attributes_[key] = value;
   }
 
 ////////////////////////////////////////////////////////////////

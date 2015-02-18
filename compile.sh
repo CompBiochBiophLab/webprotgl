@@ -70,7 +70,8 @@ js_in = [
   "webgl/transform.js",
   "webgl/movementmanager.js",
   "jdataview.js",
-  "protein.js"
+  "protein.js",
+  "selection.js"
   ]
 js_last = "protgl.js"
 js_out = "onlineprotein.js"

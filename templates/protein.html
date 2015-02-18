@@ -37,6 +37,11 @@ $(document).ready(function() {{
   try {{
     var protgl = new OnlineProtein("{_root_}/{_static_}/");
     protgl.onStart(document.URL);
+
+    $("[show='vdw']").click(function() {{
+      protein = protgl.protein();
+      protein.show_VdW();
+    }});
   }} catch(e) {{
     hide_dialog();
     show_dialog("An error occurred: " + e, "ok", "").done(function(result) {{

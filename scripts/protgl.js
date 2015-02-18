@@ -5,6 +5,7 @@ function OnlineProtein(static_path)
   var that = this;
   var current_url_ = "";
   var current_name_ = "";
+  var current_protein_;
   var isAnimating_ = false;
 
   var sphere_;
@@ -104,6 +105,10 @@ function OnlineProtein(static_path)
     that.loadScripts();
   }
 
+  this.protein = function() {
+    return current_protein_;
+  }
+
   function parseProtein(pdb) {
     hide_dialog();
     logger_.debug("Protein found. Displaying");
@@ -115,13 +120,13 @@ function OnlineProtein(static_path)
     var cylinderRoot = root.addChild();
     cylinderRoot.setShader(cylinderShader_);
 
-    var protein = new Protein(logger_);
-    protein.parse(pdb, sphereRoot, sphere_, cylinderRoot, cylinder_);
-    protein.setID(current_name_);
+    current_protein_ = new Protein(logger_);
+    current_protein_.parse(pdb, sphereRoot, sphere_, cylinderRoot, cylinder_);
+    current_protein_.setID(current_name_);
 
-    protein.print();
+    current_protein_.print();
 
-    gCamera.setTargetObject(protein);
+    gCamera.setTargetObject(current_protein_);
 
     requestAnimationFrame = window.requestAnimationFrame;
     if (!requestAnimationFrame)
@@ -156,7 +161,8 @@ function OnlineProtein(static_path)
       "webgl/transform.js",
       "webgl/movementmanager.js",
       "jdataview.js",
-      "protein.js"];
+      "protein.js",
+      "selection.js"];
     var totalScripts = allScripts.length;
     var loadedScripts = 0;
 

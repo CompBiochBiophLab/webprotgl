@@ -76,10 +76,12 @@ function CameraMovementManager(camera, stepSize)
   this.onActivate = function(mouse) {
     switch (mouse.evt_) {
       case "wheelUp":
-        camera_.step(stepSize_);
+        if (withinCanvas(camera_, mouse))
+          camera_.step(stepSize_);
         break;
       case "wheelDown":
-        camera_.step(-stepSize_);
+        if (withinCanvas(camera_, mouse))
+          camera_.step(-stepSize_);
         break;
       case "down":
         switch (mouse.button) {
