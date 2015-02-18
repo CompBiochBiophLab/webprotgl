@@ -55,13 +55,35 @@ function Transform()
     if (!visible_ || !selectable_) {
       return null;
     }
-    
-    if (bbox_.intersects(ray) < 0.) {
+
+    var distance = bbox_.intersects(ray);
+    if (distance < 0.) {
       return null;
     }
-    
-    //console.log("x");
-    return null;
+
+    var best = null;
+
+    for (child in children_) {
+      var hit = children_[child].castRay(ray);
+      if (!hit)
+        continue;
+
+      if (!best)
+        best = hit;
+      else if (hit[0] < best[0])
+        best = hit;
+    }
+
+    for (shape in shapes_) {
+      var dist = shapes_[shape].getBoundingBox().multiply(world_).intersects(ray);
+      if (dist < 0.)
+        continue;
+
+      if (!best || dist < best[0])
+        best = [dist, this_, shapes_[shape], attributes_];
+    }
+
+    return best;
   }
   
 ////////////////////////////////////////////////////////////////

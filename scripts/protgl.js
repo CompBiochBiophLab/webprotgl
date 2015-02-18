@@ -121,8 +121,7 @@ function OnlineProtein(static_path)
     cylinderRoot.setShader(cylinderShader_);
 
     current_protein_ = new Protein(logger_);
-    current_protein_.parse(pdb, sphereRoot, sphere_, cylinderRoot, cylinder_);
-    current_protein_.setID(current_name_);
+    current_protein_.parse(current_name_, pdb, sphereRoot, sphere_, cylinderRoot, cylinder_);
 
     current_protein_.print();
 

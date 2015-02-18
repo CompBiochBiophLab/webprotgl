@@ -450,7 +450,8 @@ function Protein(logger)
     return sphereRoot_.getBoundingBox().getCenter();
   }
 
-  this.parse = function(data, sphereRoot, sphere, cylinderRoot, cylinder) {
+  this.parse = function(name, data, sphereRoot, sphere, cylinderRoot, cylinder) {
+    id_ = name;
     sphereRoot_ = sphereRoot; // Addchild?
     cylinderRoot_ = cylinderRoot;
 
@@ -540,7 +541,7 @@ function Protein(logger)
         offset += 4;
         var z = buffer.getFloat32(offset, true);
         offset += 4;
-        attr = {"protein": "TODO PROTEIN NAME"};
+        attr = {"protein": id_};
         amino.addAtom(x, y, z, trf, sphere, amino.getAtomInfo(atom), attr);
         ++sum;
       }
@@ -572,11 +573,11 @@ function Protein(logger)
       chains_[c].print();
     }
   }
-
+/*
   this.setID = function(id) {
     id_ = id;
   }
-
+*/
   this.currentSelection = function() {
     return current_selection_;
   }
