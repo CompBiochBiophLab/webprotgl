@@ -27,7 +27,7 @@
 ,"Server","_email_password_","test",,
 ,"Server","_email_sender_","Online Protein Viewer - No Reply <no-reply@jrenggli.com>",,
 ,"Server","_email_login_","test",,
-,"Server","_base_path_",,"/webglprotein",
+,"Server","_base_path_",,"/webglprotein/",
 ,"Server","_port_",80,,8080
 ,"Server","_server_log_","proteins.log",,
 ,"Server","_server_db_","proteins.db",,

@@ -101,7 +101,7 @@ function CameraMovementManager(camera, stepSize)
         var h = context.viewportHeight;
         var rel_pos = relativePosition(context, mouse);
         var hit = camera_.castRay([(2. * rel_pos[0] / w) - 1., 1. - (2. * rel_pos[1] / h)]);
-        console.log(hit);
+        //console.log(hit);
         break;
     }
   }

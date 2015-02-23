@@ -6,26 +6,32 @@ function AminoAcid()
 {
   var atoms_ = [];
 
-  this.addAtom = function(x, y, z, root, sphere, colour, attributes) {
+  this.addAtom = function(x, y, z, root, sphere, info, attributes) {
     if (x > 1e10) {
       console.log(x);
       return;
     }
+    var element = info[0];
+    var vdw = info[1];
+    var colour = info[2];
     var trf = root.addChild();
     trf.translate([x, y, z]);
     trf.addShape(sphere);
     trf.setParameter("colour", createVectorParameter(colour));
     trf.setParameter("radius", createFloatParameter(0.5));
+    // Attributes for selection
     for (key in attributes) {
       trf.setAttribute(key, attributes[key]);
     }
+    trf.setAttribute("element", element);
+    trf.setAttribute("vdw", vdw);
   }
 
-  this.addBonds = function(root, cylinder, prevAmino, atoms) {
+  this.addBonds = function(root, cylinder, prevAmino, atoms, attributes) {
     var zero = [0., 0., 0.];
     bonds = this.getBonds();
 
-    link = function(p0, p1, colA, colB) {
+    link = function(p0, p1, colA, colB, bond) {
       var dir = [0., 0., 1.];
       tdl.fast.subVector(dir, p1, p0);
       var dist = Math.sqrt(tdl.fast.dot(dir, dir));
@@ -38,6 +44,11 @@ function AminoAcid()
       trf.setParameter("length", createFloatParameter(dist));
       // Translate to position
       trf.translate(p0);
+      // Attributes for selection
+      for (key in attributes) {
+        trf.setAttribute(key, attributes[key]);
+      }
+      trf.setAttribute("bond", bond);
       // Rotate
       if (dir[0] == 0. && dir[1] == 0.)
       {
@@ -59,7 +70,7 @@ function AminoAcid()
       var p1 = atom1.multiply(zero);
       colA = atom0.findParameter("colour").getValue();
       colB = atom1.findParameter("colour").getValue();
-      link(p0, p1, colA, colB);
+      link(p0, p1, colA, colB, bond);
     }
 
     if (prevAmino) {
@@ -91,11 +102,12 @@ function AminoAcid()
   }
 }
 
-AminoAcid.prototype.C  = [1., 1., 1., 1.];
-AminoAcid.prototype.O  = [1., 0., 0., 1.];
-AminoAcid.prototype.N  = [0., 0., 1., 1.];
-AminoAcid.prototype.S  = [1., 1., 0., 1.];
-AminoAcid.prototype.Se = [1., 0.5, 0., 1.];
+AminoAcid.prototype.H  = ["H" , 1.2,  [1., 1., 1., 1.]];
+AminoAcid.prototype.C  = ["C" , 1.7,  [1., 1., 1., 1.]];
+AminoAcid.prototype.O  = ["O" , 1.52, [1., 0., 0., 1.]];
+AminoAcid.prototype.N  = ["N" , 1.55, [0., 0., 1., 1.]];
+AminoAcid.prototype.S  = ["S" , 1.8,  [1., 1., 0., 1.]];
+AminoAcid.prototype.Se = ["Se", 1.9,  [1., 0.5, 0., 1.]];
 
 ////////////////////////////////////////////////////////////////
 
@@ -382,6 +394,7 @@ function Chain()
   var that = this;
 
   var aminos_ = [];
+  var sequence_ = ""
 
   var mapAminos_ = {
     'A': new Alanine(),
@@ -425,6 +438,14 @@ function Chain()
     return aminos_;
   }
 
+  this.getSequence = function() {
+    return sequence_;
+  }
+
+  this.setSequence = function(sequence) {
+    sequence_ = sequence;
+  }
+
   this.print = function() {
   }
 }
@@ -454,6 +475,7 @@ function Protein(logger)
     id_ = name;
     sphereRoot_ = sphereRoot; // Addchild?
     cylinderRoot_ = cylinderRoot;
+    current_selection_ = new Selection(that);
 
     // Make a buffer on the data
     var buffer = new jDataView(data);
@@ -497,6 +519,7 @@ function Protein(logger)
     var sequence = buffer.getString(totRes, offset);
     offset += totRes;
     logger.info("Sequence (" + sequence.length + " aminos):");
+    chain.setSequence(sequence);
     for (var i = 0; i < sequence.length; i += 10) {
       var end = i + 10;
       var spaces = " ";
@@ -541,29 +564,62 @@ function Protein(logger)
         offset += 4;
         var z = buffer.getFloat32(offset, true);
         offset += 4;
-        attr = {"protein": id_};
-        amino.addAtom(x, y, z, trf, sphere, amino.getAtomInfo(atom), attr);
+        // Attributes
+        attributes = {
+          "protein": id_,
+          "chain": sid,
+          "amino": sequence[res],
+          "residue": res,
+          "atom": atom
+        };
+        amino.addAtom(x, y, z, trf, sphere, amino.getAtomInfo(atom), attributes);
         ++sum;
       }
+      // Attributes
+      attributes = {
+        "protein": id_,
+        "chain": sid,
+        "amino": sequence[res],
+        "residue": res
+      };
       var trf2 = cylinderRoot.addChild();
-      amino.addBonds(trf2, cylinder, prevAmino, trf);
+      amino.addBonds(trf2, cylinder, prevAmino, trf, attributes);
       prevAmino = trf;
     }
     //console.log(sum);
     return offset;
   }
 
-  this.show_VdW = function() {
-    sel = currentSelection();
-    sel2 = that.currentSelection();
+  this.getAtomTransform = function(chain, amino, atom) {
+    var base = amino;
     for (c in chains_) {
-      chain = chains_[c];
-      /*
-      for (amino in chain.aminos_) {
-        logger.debug(amino);
-      }
-      */
+      if (c == chain)
+        break;
+      // TODO: One transform for each chain !!!
+      base += chains_[c].getSequence().length;
     }
+
+    return sphereRoot_.getChild(base).getChild(atom);
+  }
+
+  this.show = function(atom_radius, bond_radius) {
+    var is_vdw = atom_radius == 0.;
+    current_selection_.iterateAtoms(function(atomTrf) {
+      if (is_vdw)
+      {
+        atom_radius = atomTrf.getAttribute("vdw");
+      }
+      atomTrf.setParameter("radius", createFloatParameter(atom_radius));
+    });
+    /*
+    current_selection_.iterateBonds(function(atomTrf) {
+      if (is_vdw)
+      {
+        radius = atomTrf.getAttribute("vdw");
+      }
+      atomTrf.setParameter("radius", createFloatParameter(radius));
+    });
+    */
   }
 
   this.print = function() {
@@ -573,11 +629,7 @@ function Protein(logger)
       chains_[c].print();
     }
   }
-/*
-  this.setID = function(id) {
-    id_ = id;
-  }
-*/
+
   this.currentSelection = function() {
     return current_selection_;
   }

@@ -7,6 +7,7 @@ function OnlineProtein(static_path)
   var current_name_ = "";
   var current_protein_;
   var isAnimating_ = false;
+  var lastAnimation_ = 0;
 
   var sphere_;
   var sphereShader_;
@@ -43,8 +44,17 @@ function OnlineProtein(static_path)
   //var lastFrame_ = new Date();
 
   function animate() {
-    gCamera.display();
-    requestAnimationFrame(animate);
+    var now = Date.now();
+    if (lastAnimation_ + 200 > now)
+    {
+      requestAnimationFrame(animate);
+    }
+    else
+    {
+      lastAnimation_ = now;
+      gCamera.display();
+      requestAnimationFrame(animate);
+    }
     //this_frame = new Date();
     //console.log(this_frame.getTime() - lastFrame_.getTime());
     //lastFrame_ = this_frame;

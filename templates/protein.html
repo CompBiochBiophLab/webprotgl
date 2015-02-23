@@ -38,9 +38,14 @@ $(document).ready(function() {{
     var protgl = new OnlineProtein("{_root_}/{_static_}/");
     protgl.onStart(document.URL);
 
-    $("[show='vdw']").click(function() {{
+    $("[show='spheres']").click(function() {{
       protein = protgl.protein();
-      protein.show_VdW();
+      //protein.show_VdW();
+      protein.show(0., -1.);
+    }});
+    $("[show='tubes']").click(function() {{
+      protein = protgl.protein();
+      protein.show(0.5, 0.5);
     }});
   }} catch(e) {{
     hide_dialog();
