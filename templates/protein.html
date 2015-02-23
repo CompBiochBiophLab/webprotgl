@@ -38,14 +38,22 @@ $(document).ready(function() {{
     var protgl = new OnlineProtein("{_root_}/{_static_}/");
     protgl.onStart(document.URL);
 
+    $("[show='balls']").click(function() {{
+      protein = protgl.protein();
+      protein.show(0.7, 0.3);
+    }});
     $("[show='spheres']").click(function() {{
       protein = protgl.protein();
-      //protein.show_VdW();
       protein.show(0., -1.);
     }});
     $("[show='tubes']").click(function() {{
       protein = protgl.protein();
-      protein.show(0.5, 0.5);
+      protein.show(0.3, 0.3);
+    }});
+    $("[show='wires']").click(function() {{
+      // TODO: REAL wires...
+      protein = protgl.protein();
+      protein.show(0.05, 0.05);
     }});
   }} catch(e) {{
     hide_dialog();

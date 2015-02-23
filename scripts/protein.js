@@ -91,8 +91,12 @@ function AminoAcid()
     }
   }
 
-  this.getSize = function() {
+  this.numberOfAtoms = function() {
     return 0;
+  }
+
+  this.numberOfBonds = function() {
+    return this.getBonds().length;
   }
 
   this.prepareTransform = function(root) {
@@ -113,7 +117,7 @@ AminoAcid.prototype.Se = ["Se", 1.9,  [1., 0.5, 0., 1.]];
 
 function Alanine() {}
 Alanine.prototype = new AminoAcid;
-Alanine.prototype.getSize = function() { return 5; }
+Alanine.prototype.numberOfAtoms = function() { return 5; }
 Alanine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4]]; }
 
 function Arginine() {
@@ -132,7 +136,7 @@ function Arginine() {
   }
 }
 Arginine.prototype = new AminoAcid;
-Arginine.prototype.getSize = function() { return 11; }
+Arginine.prototype.numberOfAtoms = function() { return 11; }
 Arginine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [5,6], [6,7], [7,8], [8,9], [8,10]]; }
 
 function Asparagine() {
@@ -150,7 +154,7 @@ function Asparagine() {
   }
 }
 Asparagine.prototype = new AminoAcid;
-Asparagine.prototype.getSize = function() { return 8; }
+Asparagine.prototype.numberOfAtoms = function() { return 8; }
 Asparagine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [5,6], [5,7]]; }
 
 function AsparticAcid() {
@@ -168,7 +172,7 @@ function AsparticAcid() {
   }
 }
 AsparticAcid.prototype = new AminoAcid;
-AsparticAcid.prototype.getSize = function() { return 8; }
+AsparticAcid.prototype.numberOfAtoms = function() { return 8; }
 AsparticAcid.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [5,6], [5,7]]; }
 
 function Cysteine() {
@@ -186,7 +190,7 @@ function Cysteine() {
   }
 }
 Cysteine.prototype = new AminoAcid;
-Cysteine.prototype.getSize = function() { return 6; }
+Cysteine.prototype.numberOfAtoms = function() { return 6; }
 Cysteine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5]]; }
 
 function GlutamicAcid() {
@@ -204,7 +208,7 @@ function GlutamicAcid() {
   }
 }
 GlutamicAcid.prototype = new AminoAcid;
-GlutamicAcid.prototype.getSize = function() { return 9; }
+GlutamicAcid.prototype.numberOfAtoms = function() { return 9; }
 GlutamicAcid.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [5,6], [6,7], [6,8]]; }
 
 function Glutamine() {
@@ -222,12 +226,12 @@ function Glutamine() {
   }
 }
 Glutamine.prototype = new AminoAcid;
-Glutamine.prototype.getSize = function() { return 9; }
+Glutamine.prototype.numberOfAtoms = function() { return 9; }
 Glutamine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [5,6], [6,7], [6,8]]; }
 
 function Glycine() {}
 Glycine.prototype = new AminoAcid;
-Glycine.prototype.getSize = function() { return 4; }
+Glycine.prototype.numberOfAtoms = function() { return 4; }
 Glycine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3]]; }
 
 function Histidine() {
@@ -245,17 +249,17 @@ function Histidine() {
   }
 }
 Histidine.prototype = new AminoAcid;
-Histidine.prototype.getSize = function() { return 10; }
+Histidine.prototype.numberOfAtoms = function() { return 10; }
 Histidine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [5,6], [5,7], [6,8], [7,9], [8,9]]; }
 
 function Isoleucine() {}
 Isoleucine.prototype = new AminoAcid;
-Isoleucine.prototype.getSize = function() { return 8; }
+Isoleucine.prototype.numberOfAtoms = function() { return 8; }
 Isoleucine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [4,6], [5,7]]; }
 
 function Leucine() {}
 Leucine.prototype = new AminoAcid;
-Leucine.prototype.getSize = function() { return 8; }
+Leucine.prototype.numberOfAtoms = function() { return 8; }
 Leucine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [5,6], [5,7]]; }
 
 function Lysine() {
@@ -272,7 +276,7 @@ function Lysine() {
   }
 }
 Lysine.prototype = new AminoAcid;
-Lysine.prototype.getSize = function() { return 9; }
+Lysine.prototype.numberOfAtoms = function() { return 9; }
 Lysine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [5,6], [6,7], [7,8]]; }
 
 function Methionine() {
@@ -290,22 +294,22 @@ function Methionine() {
   }
 }
 Methionine.prototype = new AminoAcid;
-Methionine.prototype.getSize = function() { return 8; }
+Methionine.prototype.numberOfAtoms = function() { return 8; }
 Methionine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [5,6], [6,7]]; }
 
 function Phenylalanine() {}
 Phenylalanine.prototype = new AminoAcid;
-Phenylalanine.prototype.getSize = function() { return 11; }
+Phenylalanine.prototype.numberOfAtoms = function() { return 11; }
 Phenylalanine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [5,6], [5,7], [6,8], [7,9], [8,10], [9,10]]; }
 
 function Proline() {}
 Proline.prototype = new AminoAcid;
-Proline.prototype.getSize = function() { return 7; }
+Proline.prototype.numberOfAtoms = function() { return 7; }
 Proline.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [5,6], [5,0]]; }
 
 function Pyrrolysine() {}
 Pyrrolysine.prototype = new AminoAcid;
-Pyrrolysine.prototype.getSize = function() { return 17; }
+Pyrrolysine.prototype.numberOfAtoms = function() { return 17; }
 //Pyrrolysine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [5,6], [6,7], [7,8], [8,9], [9,10], [9,11], ...]; }
 
 function Selenocysteine() {
@@ -323,7 +327,7 @@ function Selenocysteine() {
   }
 }
 Selenocysteine.prototype = new AminoAcid;
-Selenocysteine.prototype.getSize = function() { return 6; }
+Selenocysteine.prototype.numberOfAtoms = function() { return 6; }
 Selenocysteine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4]]; }
 
 function Serine() {
@@ -340,7 +344,7 @@ function Serine() {
   }
 }
 Serine.prototype = new AminoAcid;
-Serine.prototype.getSize = function() { return 6; }
+Serine.prototype.numberOfAtoms = function() { return 6; }
 Serine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5]]; }
 
 function Threonine() {
@@ -357,7 +361,7 @@ function Threonine() {
   }
 }
 Threonine.prototype = new AminoAcid;
-Threonine.prototype.getSize = function() { return 7; }
+Threonine.prototype.numberOfAtoms = function() { return 7; }
 Threonine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [4,6]]; }
 
 function Tryptophan() {
@@ -374,17 +378,17 @@ function Tryptophan() {
   }
 }
 Tryptophan.prototype = new AminoAcid;
-Tryptophan.prototype.getSize = function() { return 14; }
+Tryptophan.prototype.numberOfAtoms = function() { return 14; }
 Tryptophan.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [5,6], [5,7], [6,8], [7,9], [8,9], [7,10], [9,11], [10,12], [11,13], [12,13]]; }
 
 function Tyrosine() {}
 Tyrosine.prototype = new AminoAcid;
-Tyrosine.prototype.getSize = function() { return 12; }
+Tyrosine.prototype.numberOfAtoms = function() { return 12; }
 Tyrosine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [5,6], [5,7], [6,8], [7,9], [8,10], [9,10], [10,11]]; }
 
 function Valine() {}
 Valine.prototype = new AminoAcid;
-Valine.prototype.getSize = function() { return 7; }
+Valine.prototype.numberOfAtoms = function() { return 7; }
 Valine.prototype.getBonds = function() { return [[0,1], [1,2], [2,3], [1,4], [4,5], [4,6]]; }
 
 ////////////////////////////////////////////////////////////////
@@ -557,7 +561,7 @@ function Protein(logger)
       var amino = chain.addAminoAcid1(sequence[res]);
       var trf = amino.prepareTransform(sphereRoot);
 
-      for (var atom = 0; atom < amino.getSize(); ++atom) {
+      for (var atom = 0; atom < amino.numberOfAtoms(); ++atom) {
         var x = buffer.getFloat32(offset, true);
         offset += 4;
         var y = buffer.getFloat32(offset, true);
@@ -602,24 +606,35 @@ function Protein(logger)
     return sphereRoot_.getChild(base).getChild(atom);
   }
 
+  this.getBondTransform = function(chain, amino, bond) {
+    var base = amino;
+    for (c in chains_) {
+      if (c == chain)
+        break;
+      // TODO: One transform for each chain !!!
+      base += chains_[c].getSequence().length;
+    }
+
+    return cylinderRoot_.getChild(base).getChild(bond);
+  }
+
   this.show = function(atom_radius, bond_radius) {
     var is_vdw = atom_radius == 0.;
     current_selection_.iterateAtoms(function(atomTrf) {
+      atomTrf.setVisibility(atom_radius >= 0.);
       if (is_vdw)
       {
         atom_radius = atomTrf.getAttribute("vdw");
       }
-      atomTrf.setParameter("radius", createFloatParameter(atom_radius));
+      if (atom_radius >= 0.)
+        atomTrf.setParameter("radius", createFloatParameter(atom_radius));
     });
-    /*
-    current_selection_.iterateBonds(function(atomTrf) {
-      if (is_vdw)
-      {
-        radius = atomTrf.getAttribute("vdw");
-      }
-      atomTrf.setParameter("radius", createFloatParameter(radius));
+
+    current_selection_.iterateBonds(function(bondTrf) {
+      bondTrf.setVisibility(bond_radius >= 0.);
+      if (bond_radius >= 0.)
+        bondTrf.setParameter("radius", createFloatParameter(bond_radius));
     });
-    */
   }
 
   this.print = function() {
