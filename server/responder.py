@@ -5,6 +5,7 @@ import traceback
 
 from database.dictionary import Dictionary
 from server.html import html_format_template
+from server.json import json_format_data, json_format_template
 
 
 class Response(object):
@@ -26,6 +27,11 @@ class Response(object):
         self.__mime_type = "application/json"
         self.__cookie = None
         self.__location = ""
+        self.__headers = dict()
+        self.__charset = "utf-8"
+
+    def set_header(self, name, content):
+        self.__headers[name] = content
 
     def finalise(self, user):
         if not self.__body and self.__status >= 400:
@@ -54,7 +60,26 @@ class Response(object):
         else:
             self.__status = self.NOT_FOUND
             self.__body = b""
-  
+
+    def set_json(self, path, user=None, url=None):
+        self.__body = json_format_template(path, user, url)
+        if self.__body:
+            self.__status = self.OK
+            self.__mime_type = "application/json"
+        else:
+            self.__status = self.NOT_FOUND
+            self.__body = b""
+
+    def set_json_data(self, data, data_name, user=None, url=None):
+        labeled = {data_name: data}
+        self.__body = json_format_data(labeled, user, url)
+        if self.__body:
+            self.__status = self.OK
+            self.__mime_type = "application/json"
+        else:
+            self.__status = self.NOT_FOUND
+            self.__body = b""
+
     def set_cookie(self, cookie):
         self.__cookie = cookie
     
@@ -93,19 +118,22 @@ class Response(object):
         self.__status = code
 
     def get_params(self):
-        domain = Dictionary.get("_hostname_")
-        host = Dictionary.get("_protocol_") + "://" + domain
-        root = Dictionary.format("{_base_path_}/")
-        port = int(Dictionary.get("_port_"))
-        params = [("Content-Type", self.__mime_type),
+        english = Dictionary.get_default()
+        domain = english.get("_hostname_")
+        host = english.get("_protocol_") + "://" + domain
+        root = english.format("{_base_path_}/")
+        port = int(english.get("_port_"))
+        params = [("Content-Type", "{0}; charset={1}".format(self.__mime_type, self.__charset)),
                   ("Content-Base", host),
                   ("Content-Length", str(len(self.__body)))]
+        for hdr in self.__headers:
+            params.append((hdr, self.__headers[hdr]))
         if self.__cookie:
             logging.debug("Has cookie")
             params.append(("Set-Cookie", self.__cookie.get_string(domain, root, port)))
         if self.__location:
             logging.debug("Redirect to " + self.__location)
-            params.append(("Location", self.__location))
+            params.append(("Location", english.format(self.__location)))
         return params
 
 

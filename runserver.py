@@ -13,11 +13,11 @@ import traceback
 
 from database.database import Database
 from database.dictionary import Dictionary
-from server import post_parser, responder
+from server import cookie, post_parser, responder
 from wsgiref.simple_server import make_server
 
 os.environ["WORKDIR"] = __here__
-dictionary = Dictionary(os.path.abspath(os.path.join(__here__, "dict.pickle")))
+Dictionary.load(Dictionary.ENGLISH, os.path.abspath(os.path.join(__here__, "dict.pickle")))
 
 
 class RESTServer(object):
@@ -25,15 +25,16 @@ class RESTServer(object):
 
     def __init__(self):
         """ Initialise servers, regexes """
-        logging.basicConfig(filename=os.path.join(__here__,
-            Dictionary.get("_server_log_")), level=logging.DEBUG)
+        english = Dictionary.get_language(Dictionary.ENGLISH)
+        logging.basicConfig(filename=os.path.join(__here__, english.get("_server_log_")),
+                            level=logging.DEBUG)
 
-        self.__database = Database(os.path.join(__here__, Dictionary.get("_server_db_")),
-                                   Dictionary.get("_papers_root_"))
+        self.__database = Database(os.path.join(__here__, english.get("_server_db_")))
         self.__server = responder.Responder()
 
     def __call__(self, env, start_response):
         """ Entry point """
+        database = None
         user = None
         response = responder.Response()
     
@@ -41,11 +42,15 @@ class RESTServer(object):
         try:
             database = self.__database.connect()
             if "HTTP_COOKIE" in env:
-                args = post_parser.parse(data=env["HTTP_COOKIE"])
-            if args:
-                #cookie = cookie.Cookie(client_string = env["HTTP_COOKIE"])
-                user = database.users().find_session(args)
-                logging.debug(user)
+                #args = post_parser.parse(data=env["HTTP_COOKIE"])
+                #if args:
+                cookies = cookie.Cookie.restore(env["HTTP_COOKIE"])
+                for c in cookies:
+                    #cookie = cookie.Cookie(client_string = env["HTTP_COOKIE"])
+                    user = database.users().find_session(c)
+                    if user:
+                        logging.debug(user)
+                        break
       
             # # Check there is a valid path
             # path = env["PATH_INFO"]
@@ -70,7 +75,7 @@ class RESTServer(object):
             try:
                 logging.debug("Now serving " + str(path))
 
-                if len(path) == 1:
+                if not user and len(path) == 1:
                     if not path[0]:
                         path[0] = "index.html"
                     if path[0].endswith(".html"):

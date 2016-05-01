@@ -1,8 +1,8 @@
 "Disabled","Type","Key","production","preprod","testing"
-,"Common","register","Register",,
-,"Common","home","Home",,
-,"Common","logout","Logout",,
-,"Common","login","Login",,
+,"Common","_link_home_","Home",,
+,"Common","_link_register_","Register",,
+,"Common","_link_logout_","Logout",,
+,"Common","_link_login_","Login",,
 ,"HTML","html_header","Online Protein Viewer",,
 ,"HTML","html_footer","<!--footer-->",,
 ,"HTML","html_main","<!--main-->",,

@@ -34,67 +34,67 @@ class UserDB(object):
 
 ################################################################
 
-  def activate(self, session_id):
-    cursor = self.__database.cursor()
-    logging.debug(session_id)
-    for s_row in cursor.execute(self.__session_select +
-                                "WHERE eid=? AND state=?",
-                                (session_id, self.SESSION_REGISTER)):
-      # Verify expiration
-      (expires, state, email) = self.__load_session(s_row)
+    def activate(self, session_id):
+        cursor = self.__database.cursor()
+        logging.debug(session_id)
+        for s_row in cursor.execute(self.__session_select +
+                                    "WHERE eid=? AND state=?",
+                                    (session_id, self.SESSION_REGISTER)):
+            # Verify expiration
+            (expires, state, email) = self.__load_session(s_row)
 
-      logging.debug("Found session")
+            logging.debug("Found session")
 
-      cursor.execute("DELETE FROM Sessions WHERE eid = ? AND state = ?",
-                    (session_id, self.SESSION_REGISTER))
-      self.__database.commit()
-      if expires > datetime.now():
-        logging.debug("Activating " + email)
-        return 0
-      else:
-        return 1
-    return -1
+            cursor.execute("DELETE FROM Sessions WHERE eid = ? AND state = ?",
+                           (session_id, self.SESSION_REGISTER))
+            self.__database.commit()
+            if expires > datetime.now():
+                logging.debug("Activating " + email)
+                return 0
+            else:
+                return 1
+        return -1
 
 ################################################################
 
-  def confirm_reset(self, link, data):
-    # Validate data
-    needed = ["password", "password_bis", "captcha"]
-    for item in needed:
-      if item not in data:
-        return False
-    if data["captcha"]:  # Attempt to keep bots at bay
-      return False
-    if data["password"] != data["password_bis"]:
-      return False
+    def confirm_reset(self, link, data):
+        # Validate data
+        needed = ["password", "password_bis", "captcha"]
+        for item in needed:
+            if item not in data:
+                return False
+        if data["captcha"]:  # Attempt to keep bots at bay
+            return False
+        if data["password"] != data["password_bis"]:
+            return False
 
-    password = data["password"]
+        password = data["password"]
 
-    cursor = self.__database.cursor()
-    for s_row in cursor.execute(self.__session_select +
+        cursor = self.__database.cursor()
+        for s_row in cursor.execute(self.__session_select +
                                 "WHERE eid=? AND state=?",
                                 (link, self.SESSION_RESET)):
-      # Verify expiration
-      (expires, state, email) = self.__load_session(s_row)
-      if expires < datetime.now():
-        return False
+            # Verify expiration
+            (expires, state, email) = self.__load_session(s_row)
+            if expires < datetime.now():
+                return False
 
-      # Update
-      (pwd_salt, pwd_hash) = self.__hash(None, password)
-      cursor.execute("UPDATE Users SET password=?, salt=? "
+            # Update
+            (pwd_salt, pwd_hash) = self.__hash(None, password)
+            cursor.execute("UPDATE Users SET password=?, salt=? "
                      "WHERE email=?",
                      (pwd_hash, pwd_salt, email))
-      if cursor.rowcount > 0:
-        self.__database.commit()
-        return True
-      else:
-        return False
+            if cursor.rowcount > 0:
+                self.__database.commit()
+                return True
+            else:
+                return False
 
 ################################################################
 
-    def find_session(self, data):
-        if "session" in data:
-            sid = data["session"]
+    def find_session(self, cookie):
+        if cookie.name().lower() == "session":
+            sid = cookie.value()
             cursor = self.__database.cursor()
 
             for s_row in cursor.execute(self.__session_select +
@@ -177,23 +177,26 @@ class UserDB(object):
                               "WHERE email=?", (email, )):
             user = self.__load_user(row)
             assert user
-            timeout = int(Dictionary.get("reset_timeout"))
+            translator = user.get_dictionary()
+            timeout = int(translator.get("_reset_expiration_user_"))
             (sid, expires) = self.__create_session(exp_minutes=timeout)
             cursor.execute(self.__session_insert,
                      (sid, email, self.SESSION_RESET, expires))
             logging.debug("Initiate reset for " + email)
-            mail = Email(email, Dictionary.get("mail_reset_subject"))
-            variables = {"__reset_link": sid, "__fullname": user.get_name()}
+            mail = Email(user.get_email(), translator, "_reset_subject_")
+            variables = {"__reset_link": sid, "__name": user.get_name()}
             mail.load_body("reset", variables)
             mail.run()
 
             self.__database.commit()
-
             return True
+
+        logging.debug("Reset failed")
+        return False
 
 ################################################################
 
-  	def register(self, data):
+    def register(self, data):
         # Validate data
         needed = ["salutation", "first_name", "last_name", "email",
               "password", "password_bis", "captcha"]
@@ -235,23 +238,22 @@ class UserDB(object):
 
 ################################################################
 
-  def reset_valid(self, link):
-    cursor = self.__database.cursor()
-    for s_row in cursor.execute(self.__session_select +
-                                "WHERE eid=? AND state=?",
-                                (link, self.SESSION_RESET)):
-      (expires, state, email) = self.__load_session(s_row)
-      return expires >= datetime.now()
-    return False
+    def reset_valid(self, session):
+        cursor = self.__database.cursor()
+        for s_row in cursor.execute(self.__session_select +
+                                    "WHERE eid=? AND state=?",
+                                    (session, self.SESSION_RESET)):
+            (expires, state, email) = self.__load_session(s_row)
+            return expires >= datetime.now()
+
+        return False
 
 ################################################################
 
-  def revoke_session(self, user):
-    cursor = self.__database.cursor()
-    cursor.execute("DELETE FROM Sessions WHERE email = ? AND state = ?",
-                   (user.email(), self.SESSION_STANDARD))
-    self.__database.commit()
-    return Cookie("session", "", datetime.now())
+    def revoke_session(self, user):
+        self.__database.execute(self.__delete_sessions, (user.get_username()))
+        #self.__database.commit()
+        return Cookie("session", "", datetime.now())
 
 ################################################################
 
@@ -290,25 +292,25 @@ class UserDB(object):
 
 ################################################################
 
-  @staticmethod
-  def __load_user(row):
-    """Load an User object
+    @staticmethod
+    def __load_user(row):
+        """Load an User object
     
-    :type  row: array[...]
-    :param row: User's fields
-    :rtype:   User
-    :returns: An User object
-    """
-    return User(row[0], row[1], row[2], row[3], row[4])
+        :type  row: array[...]
+        :param row: User's fields
+        :rtype:   User
+        :returns: An User object
+        """
+        return User(row[0], row[1], row[2], row[3], row[4])
 
 ################################################################
 
-  @staticmethod
-  def __load_session(row):
-    """Load a Session record
+    @staticmethod
+    def __load_session(row):
+        """Load a Session record
 
-    :type  row: array[...]
-    :param row: Session's fields
-    """
-    return row  # Actually nothing to do ;)
-    #expires = datetime.strptime(s_row[0], "%Y-%m-%d %H:%M:%S.%f")
+        :type  row: array[...]
+        :param row: Session's fields
+        """
+        return row  # Actually nothing to do ;)
+        #expires = datetime.strptime(s_row[0], "%Y-%m-%d %H:%M:%S.%f")

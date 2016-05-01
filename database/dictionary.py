@@ -6,42 +6,61 @@ import pickle
 
 
 class Dictionary(object):
-    __singleton = None
+    ENGLISH = "en"
+
+    LANGUAGES = [ENGLISH]
+
+    __singletons = dict()
 
     def __init__(self, file_path):
         with open(file_path, "rb") as dic:
-            Dictionary.__singleton = pickle.load(dic)
+            self.__map = pickle.load(dic)
             dic.close()
-        if int(Dictionary.__singleton["_port_"]) != 80:
-            port_txt = ":{0}".format(Dictionary.__singleton["_port_"])
+        if int(self.__map["_port_"]) != 80:
+            port_txt = ":{0}".format(self.__map["_port_"])
         else:
             port_txt = ""
 
-        Dictionary.__singleton["_root_"] = "{0}://{1}{2}{3}".format(
-            Dictionary.__singleton["_protocol_"],
-            Dictionary.__singleton["_hostname_"],
+        self.__map["_root_"] = "{0}://{1}{2}{3}".format(
+            self.__map["_protocol_"],
+            self.__map["_hostname_"],
             port_txt,
-            Dictionary.__singleton["_base_path_"])
+            self.__map["_base_path_"])
 
     @staticmethod
-    def all():
-        return Dictionary.__singleton
+    def load(language, file_path):
+        if language in Dictionary.__singletons:
+            return
+        if language not in Dictionary.LANGUAGES:
+            raise Exception("No such language: " + language)
+        Dictionary.__singletons[language] = Dictionary(file_path)
 
     @staticmethod
-    def get(key):
-        if key in Dictionary.__singleton:
-            return Dictionary.__singleton[key]
+    def get_default():
+        return Dictionary.__singletons[Dictionary.ENGLISH]
+
+    @staticmethod
+    def get_language(language):
+        if language not in Dictionary.__singletons:
+            raise Exception("Language not loaded: " + language)
+        return Dictionary.__singletons[language]
+
+    def get(self, key):
+        if key in self.__map:
+            return self.__map[key]
         return None
 
-    @staticmethod
-    def format(value, variables=None):
+    def get_map(self):
+        return self.__map
+
+    def format(self, value, variables=None):
         if variables:
-            temp = Dictionary.__singleton.copy()
+            temp = self.__map.copy()
             temp.update(variables)
             return value.format(**temp)
-            #variables.update(Dictionary.__singleton)
-            #logging.debug(variables)
-            #return value.format(**variables)
-        return value.format(**Dictionary.__singleton)
+        return value.format(**self.__map)
 
-################################################################
+    def format_date(self, date_fmt, date):
+        fmt = self.__map[date_fmt]
+        return fmt.format(date.year, date.month, date.day,
+                          date.hour, date.minute, date.isoweekday())
