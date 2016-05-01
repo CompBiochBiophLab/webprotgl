@@ -101,9 +101,23 @@ function CameraMovementManager(camera, stepSize)
         var h = context.viewportHeight;
         var rel_pos = relativePosition(context, mouse);
         var hit = camera_.castRay([(2. * rel_pos[0] / w) - 1., 1. - (2. * rel_pos[1] / h)]);
+        if (hit != highlighted_) {
+          if (highlighted_)
+            this.highlight(highlighted_["trf"], false);
+          if (hit)
+            this.highlight(hit["trf"], true);
+          highlighted_ = hit;
+        }
         //console.log(hit);
         break;
     }
+  }
+
+  this.highlight = function(trf, highlighted) {
+    if (highlighted)
+      trf.setParameter("state", createFloatParameter(1.0));
+    else
+      trf.setParameter("state", createFloatParameter(0.0));
   }
 
   this.setTarget = function(target) {
@@ -114,6 +128,7 @@ function CameraMovementManager(camera, stepSize)
   var camera_ = camera;
   var stepSize_ = stepSize;
   var target_;
+  var highlighted_;
 }
 
 function MovementManager(camera)

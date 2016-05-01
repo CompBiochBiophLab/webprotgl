@@ -2,6 +2,8 @@
   precision highp float;
 #endif
 
+uniform float state;
+
 varying vec3 normal;
 varying vec4 col;
 varying vec3 to_eye;
@@ -11,8 +13,8 @@ void main(void) {
   float i = dot(to_eye, normal);
   if (i < -1e-3)
     discard;
-  vec4 cc = vec4(i * col.rgb, 1.);
-//  i = max(min(i, 1.), 0.);
+  float t = state * exp(-2.*i*i);
+  vec4 cc = (1. - t) * vec4(i * col.rgb, 1.) + t * vec4(0.4, 1., 0.4, 1.);
 
   // Diffuse light
 

@@ -11,19 +11,19 @@ import subprocess
 import sys
 
 try:
-  import argparse
-  parser = argparse.ArgumentParser(description="Prepare for test/prod")
-  parser.add_argument("config", metavar="C", choices=["testing", "preprod", "production"], default="testing", help="Target configuration")
+    import argparse
+    parser = argparse.ArgumentParser(description="Prepare for test/prod")
+    parser.add_argument("config", metavar="C", choices=["testing", "preprod", "production"], default="testing", help="Target configuration")
 
-  args = parser.parse_args()
-  root = args.config
+    args = parser.parse_args()
+    root = args.config
 except Exception as e:
-  root = sys.argv[1] #"production"
+    root = sys.argv[1]  # "production"
 
 print("Compiling for " + root)
 
 if not path.exists(root):
-  makedirs(root)
+    makedirs(root)
 
 print("Updating dictionary")
 dic_path = os.path.join(root, "dict.pickle")
@@ -31,8 +31,8 @@ rval = subprocess.call(["python3", "scripts/csv_to_dic.py", dic_path, root], cwd
 print(rval)
 
 with open(dic_path, "rb") as fil:
-  vars = pickle.load(fil)
-  fil.close()
+    vars = pickle.load(fil)
+    fil.close()
 
 database = vars["_server_db_"]
 
@@ -40,20 +40,20 @@ database = vars["_server_db_"]
 paths = ["__init__.py", "runserver.py", \
   "database", "server", "static", "templates"]
 for source in paths:
-  try:
-    (s, d) = source
-    source = s
-    dest = path.join(root, d)
-  except Exception as e:
-    dest = path.join(root, source)
-  if path.isfile(source):
-    print("Copying file " + source + " to " + dest)
-    shutil.copy(source, dest)
-  else:
-    print("Copying folder " + source)
-    if path.exists(dest):
-      shutil.rmtree(dest)
-    shutil.copytree(source, dest)
+    try:
+        (s, d) = source
+        source = s
+        dest = path.join(root, d)
+    except Exception as e:
+        dest = path.join(root, source)
+    if path.isfile(source):
+        print("Copying file " + source + " to " + dest)
+        shutil.copy(source, dest)
+    else:
+        print("Copying folder " + source + " to " + dest)
+        if path.exists(dest):
+            shutil.rmtree(dest)
+        shutil.copytree(source, dest)
 
 # Update static files
 print("Updating javascript")

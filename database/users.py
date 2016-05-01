@@ -13,24 +13,24 @@ from server.async.email import Email
 
 
 class UserDB(object):
-  """ The user table access """
+    """ The user table access """
 
-  SESSION_STANDARD = 1
-  SESSION_REGISTER = 3
-  SESSION_RESET    = 5
+    SESSION_STANDARD = 1
+    SESSION_REGISTER = 3
+    SESSION_RESET    = 5
 
 ################################################################
 
-  def __init__(self, database):
-    """
-    """
-    self.__database = database
-    self.__session_insert = "INSERT INTO Sessions \
-        (eid, email, state, expires) VALUES (?, ?, ?, ?)"
-    self.__session_select = "SELECT expires as \"ts [timestamp]\", \
-        state, email FROM Sessions "
-    self.__user_select = \
-        "SELECT rid, title, first_name, last_name, email FROM Users "
+    def __init__(self, database):
+        """
+        """
+        self.__database = database
+        self.__session_insert = "INSERT INTO Sessions \
+            (eid, email, state, expires) VALUES (?, ?, ?, ?)"
+        self.__session_select = "SELECT expires as \"ts [timestamp]\", \
+            state, email FROM Sessions "
+        self.__user_select = \
+            "SELECT rid, title, first_name, last_name, email FROM Users "
 
 ################################################################
 
@@ -92,145 +92,146 @@ class UserDB(object):
 
 ################################################################
 
-  def find_session(self, data):
-    if "session" in data:
-      sid = data["session"]
-      cursor = self.__database.cursor()
+    def find_session(self, data):
+        if "session" in data:
+            sid = data["session"]
+            cursor = self.__database.cursor()
 
-      for s_row in cursor.execute(self.__session_select +
-                                  "WHERE eid=? AND state=?",
-                                  (sid, self.SESSION_STANDARD)):
-        # Verify expiration
-        (expires, state, email) = self.__load_session(s_row)
-        if expires < datetime.now():
-          cursor.execute("DELETE FROM Sessions WHERE eid = ?", (sid,))
-          self.__database.commit()
-          return None
+            for s_row in cursor.execute(self.__session_select +
+                                        "WHERE eid=? AND state=?",
+                                        (sid, self.SESSION_STANDARD)):
+                # Verify expiration
+                (expires, state, email) = self.__load_session(s_row)
+                if expires < datetime.now():
+                    cursor.execute("DELETE FROM Sessions WHERE eid = ?", (sid,))
+                    self.__database.commit()
+                    return None
         
-        for row in cursor.execute(
-                self.__user_select + "WHERE email = ?", (s_row[2],)):
-          return self.__load_user(row)
+                for row in cursor.execute(self.__user_select + "WHERE email = ?", (s_row[2],)):
+                    return self.__load_user(row)
+
+        return None
 
 ################################################################
 
-  def find_user(self, data):
-    # Validate data
-    needed = ["email", "password", "password_bis"]
-    for item in needed:
-      if item not in data:
-        return None, None
-    if data["password_bis"]:  # Attempt to keep bots at bay
-      return None, None
+    def find_user(self, data):
+        # Validate data
+        needed = ["email", "password", "password_bis"]
+        for item in needed:
+            if item not in data:
+                return None, None
+        if data["password_bis"]:  # Attempt to keep bots at bay
+            return None, None
 
-    email = data["email"].lower()
-    password = data["password"]
+        email = data["email"].lower()
+        password = data["password"]
       
-    cursor = self.__database.cursor()
-      
-    # Verify the registration was activated
-    for _ in cursor.execute(
-            self.__session_select + "WHERE email = ? AND state = ?",
-            (email, self.SESSION_REGISTER)):
-      logging.warning("Not activated yet")
-      return None, None
-    
-    #find id + salt
-    for info_row in cursor.execute("SELECT rid, salt FROM Users \
+        cursor = self.__database.cursor()
+
+        # Verify the registration was activated
+        for _ in cursor.execute(
+                self.__session_select + "WHERE email = ? AND state = ?",
+                (email, self.SESSION_REGISTER)):
+            logging.warning("Not activated yet")
+            return None, None
+
+        #find id + salt
+        for info_row in cursor.execute("SELECT rid, salt FROM Users \
                                     WHERE email = ?", (email, )):
-      (pwd_salt, pwd_hash) = self.__hash(info_row[1], password)
-      for row in cursor.execute(
-              self.__user_select + "WHERE rid = ? AND password = ?",
-              (info_row[0], pwd_hash)):
-        user = self.__load_user(row)
+            (pwd_salt, pwd_hash) = self.__hash(info_row[1], password)
+            for row in cursor.execute(
+                    self.__user_select + "WHERE rid = ? AND password = ?",
+                    (info_row[0], pwd_hash)):
+                user = self.__load_user(row)
           
-        # Remove all existing sessions of this user
-        cursor.execute("DELETE FROM Sessions WHERE email = ?", (email,))
+                # Remove all existing sessions of this user
+                cursor.execute("DELETE FROM Sessions WHERE email = ?", (email,))
         
-        # Create a new session
-        (sid, expires) = self.__create_session(7)
-        cursor.execute(self.__session_insert,
+                # Create a new session
+                (sid, expires) = self.__create_session(7)
+                cursor.execute(self.__session_insert,
                        (sid, email, self.SESSION_STANDARD, expires))
-        self.__database.commit()
+                self.__database.commit()
 
-        return user, Cookie("session", "{1}".format(email, sid), expires)
+                return user, Cookie("session", "{1}".format(email, sid), expires)
     
-    return None, None
+        return None, None
 
 ################################################################
 
-  def initiate_reset(self, data):
-    # Validate data
-    needed = ["email", "password"]
-    for item in needed:
-      if item not in data:
-        return False
-    if data["password"]:  # Attempt to keep bots at bay
-      return False
+    def initiate_reset(self, data):
+        # Validate data
+        needed = ["email", "password"]
+        for item in needed:
+            if item not in data:
+                return False
+        if data["password"]:  # Attempt to keep bots at bay
+            return False
 
-    # Find user
-    email = data["email"].lower()
-    cursor = self.__database.cursor()
+        # Find user
+        email = data["email"].lower()
+        cursor = self.__database.cursor()
 
-    for row in cursor.execute(self.__user_select +
+        # Send mail
+        for row in cursor.execute(self.__user_select +
                               "WHERE email=?", (email, )):
-      user = self.__load_user(row)
-      assert user
-      timeout = int(Dictionary.get("reset_timeout"))
-      (sid, expires) = self.__create_session(exp_minutes=timeout)
-      cursor.execute(self.__session_insert,
+            user = self.__load_user(row)
+            assert user
+            timeout = int(Dictionary.get("reset_timeout"))
+            (sid, expires) = self.__create_session(exp_minutes=timeout)
+            cursor.execute(self.__session_insert,
                      (sid, email, self.SESSION_RESET, expires))
-      logging.debug("Initiate reset for " + email)
-      mail = Email(email, Dictionary.get("mail_reset_subject"))
-      variables = {"__reset_link": sid, "__fullname": user.get_name()}
-      mail.load_body("reset", variables)
-      mail.run()
+            logging.debug("Initiate reset for " + email)
+            mail = Email(email, Dictionary.get("mail_reset_subject"))
+            variables = {"__reset_link": sid, "__fullname": user.get_name()}
+            mail.load_body("reset", variables)
+            mail.run()
 
-      self.__database.commit()
+            self.__database.commit()
 
-      return True
+            return True
 
 ################################################################
 
-  def register(self, data):
-    # Validate data
-    needed = ["salutation", "first_name", "last_name", "email",
+  	def register(self, data):
+        # Validate data
+        needed = ["salutation", "first_name", "last_name", "email",
               "password", "password_bis", "captcha"]
-    for item in needed:
-      if item not in data:
-        return False
-    if data["captcha"]:  # Attempt to keep bots at bay
-      return False
-    if data["password"] != data["password_bis"]:
-      return False
+        for item in needed:
+            if item not in data:
+                return False
+        if data["captcha"]:  # Attempt to keep bots at bay
+            return False
+        if data["password"] != data["password_bis"]:
+            return False
 
-    # Hash the password
-    (pwd_salt, pwd_hash) = self.__hash(None, data["password"])
+        # Hash the password
+        (pwd_salt, pwd_hash) = self.__hash(None, data["password"])
 
-    # Create a "Session" that is actually the registration link
-    email = data["email"].lower()
-    (sid, expires) = self.__create_session(2)
-    logging.debug("Registration link for {1}: {0}".format(sid, email))
+        # Create a "Session" that is actually the registration link
+        email = data["email"].lower()
+        (sid, expires) = self.__create_session(2)
+        logging.debug("Registration link for {1}: {0}".format(sid, email))
 
-    # Try adding to db
-    cursor = self.__database.cursor()
+        # Try adding to db
+        cursor = self.__database.cursor()
 
-    cursor.execute(self.__session_insert,
+        cursor.execute(self.__session_insert,
                    (sid, email, self.SESSION_REGISTER, expires))
-    cursor.execute("INSERT INTO Users (title, first_name, last_name, \
+        cursor.execute("INSERT INTO Users (title, first_name, last_name, \
         email, password, salt) VALUES (?, ?, ?, ?, ?, ?)", (
         data["salutation"], data["first_name"],
         data["last_name"], email, pwd_hash, pwd_salt))
 
-    logging.debug("Registering " + email)
-    # Send an email before committing. BUT it will be on its own thread !
-    mail = Email(email, Dictionary.get("mail_register_subject"))
-    variables = {"__activation_link": sid}
-    mail.load_body("activation", variables)
-    mail.run()
+        logging.debug("Registering " + email)
+        # Send an email before committing. BUT it will be on its own thread !
+        mail = Email(email, Dictionary.get("mail_register_subject"))
+        variables = {"__activation_link": sid}
+        mail.load_body("activation", variables)
+        mail.run()
 
-    self.__database.commit()
-
-    return True
+        self.__database.commit()
+        return True
 
 ################################################################
 
@@ -254,38 +255,38 @@ class UserDB(object):
 
 ################################################################
 
-  @staticmethod
-  def __create_session(exp_days=0, exp_hours=0, exp_minutes=0):
-    """Create a new unique ID for a session
+    @staticmethod
+    def __create_session(exp_days=0, exp_hours=0, exp_minutes=0):
+        """Create a new unique ID for a session
     
-    :type  exp_days: integer
-    :param exp_days: Number of days to expiration
-    :type  exp_hours: integer
-    :param exp_hours: Number of hours to expiration
-    :type  exp_minutes: integer
-    :param exp_minutes: Number of minutes to expiration
-    :rtype:   string
-    :returns: An UID
-    """
-    return (base64.urlsafe_b64encode(os.urandom(36)).decode("UTF-8"),
+        :type  exp_days: integer
+        :param exp_days: Number of days to expiration
+        :type  exp_hours: integer
+        :param exp_hours: Number of hours to expiration
+        :type  exp_minutes: integer
+        :param exp_minutes: Number of minutes to expiration
+        :rtype:   string
+        :returns: An UID
+        """
+        return (base64.urlsafe_b64encode(os.urandom(36)).decode("UTF-8"),
             datetime.now() +
             timedelta(days=exp_days, hours=exp_hours, minutes=exp_minutes))
-
+    
 ################################################################
 
-  @staticmethod
-  def __hash(salt, password):
-    """Create a hash from a password
+    @staticmethod
+    def __hash(salt, password):
+        """Create a hash from a password
     
-    :type  password: string
-    :param password: The password to hash
-    :rtype:   string
-    :returns: An irreversible hash
-    """
-    # Need salt?
-    if not salt:
-      salt = base64.urlsafe_b64encode(os.urandom(96)).decode("UTF-8")
-    return salt, Whirlpool(salt + password).hexdigest()
+        :type  password: string
+        :param password: The password to hash
+        :rtype:   string
+        :returns: An irreversible hash
+        """
+        # Need salt?
+        if not salt:
+            salt = base64.urlsafe_b64encode(os.urandom(96)).decode("UTF-8")
+        return salt, Whirlpool(salt + password).hexdigest()
 
 ################################################################
 

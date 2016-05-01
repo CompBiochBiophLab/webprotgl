@@ -80,7 +80,7 @@ function Transform()
         continue;
 
       if (!best || dist < best[0])
-        best = [dist, this_, shapes_[shape], attributes_];
+        best = {"d": dist, "trf": this_, "shape": shapes_[shape], "attr": attributes_};
     }
 
     return best;

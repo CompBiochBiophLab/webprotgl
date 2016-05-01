@@ -41,7 +41,6 @@ with open(csv_name, newline="") as csvfile:
       typ[type] = [key]
     continue
 
-#print(dic)
 # Parse .html, .css, .py files looking for {...} variables
 rx_filter  = re.compile(".+\.(html|css|py)$")
 rx_var     = re.compile("({)?{(__)?(_?[a-zA-Z][^}]*)}", re.DOTALL)

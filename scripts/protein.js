@@ -19,6 +19,7 @@ function AminoAcid()
     trf.addShape(sphere);
     trf.setParameter("colour", createVectorParameter(colour));
     trf.setParameter("radius", createFloatParameter(0.5));
+    trf.setParameter("state", createFloatParameter(0.0));
     // Attributes for selection
     for (key in attributes) {
       trf.setAttribute(key, attributes[key]);
