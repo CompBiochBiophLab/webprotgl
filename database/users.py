@@ -30,7 +30,7 @@ class UserDB(object):
         self.__session_select = "SELECT expires as \"ts [timestamp]\", \
             state, email FROM Sessions "
         self.__user_select = \
-            "SELECT rid, title, first_name, last_name, email FROM Users "
+            "SELECT rid, title, first_name, last_name, email, lang FROM Users "
 
 ################################################################
 
@@ -108,7 +108,7 @@ class UserDB(object):
                     return None
         
                 for row in cursor.execute(self.__user_select + "WHERE email = ?", (s_row[2],)):
-                    return self.__load_user(row)
+                    return User(*row)
 
         return None
 
@@ -142,7 +142,7 @@ class UserDB(object):
             for row in cursor.execute(
                     self.__user_select + "WHERE rid = ? AND password = ?",
                     (info_row[0], pwd_hash)):
-                user = self.__load_user(row)
+                user = User(*row)
           
                 # Remove all existing sessions of this user
                 cursor.execute("DELETE FROM Sessions WHERE email = ?", (email,))
@@ -175,7 +175,7 @@ class UserDB(object):
         # Send mail
         for row in cursor.execute(self.__user_select +
                               "WHERE email=?", (email, )):
-            user = self.__load_user(row)
+            user = User(*row)
             assert user
             translator = user.get_dictionary()
             timeout = int(translator.get("_reset_expiration_user_"))
@@ -219,22 +219,26 @@ class UserDB(object):
         # Try adding to db
         cursor = self.__database.cursor()
 
-        cursor.execute(self.__session_insert,
+        try:
+            cursor.execute(self.__session_insert,
                    (sid, email, self.SESSION_REGISTER, expires))
-        cursor.execute("INSERT INTO Users (title, first_name, last_name, \
-        email, password, salt) VALUES (?, ?, ?, ?, ?, ?)", (
-        data["salutation"], data["first_name"],
-        data["last_name"], email, pwd_hash, pwd_salt))
+            cursor.execute("INSERT INTO Users (title, first_name, last_name, \
+            email, password, salt) VALUES (?, ?, ?, ?, ?, ?)", (
+            data["salutation"], data["first_name"],
+            data["last_name"], email, pwd_hash, pwd_salt))
 
-        logging.debug("Registering " + email)
-        # Send an email before committing. BUT it will be on its own thread !
-        mail = Email(email, Dictionary.get("mail_register_subject"))
-        variables = {"__activation_link": sid}
-        mail.load_body("activation", variables)
-        mail.run()
+            logging.debug("Registering " + email)
+            # Send an email before committing. BUT it will be on its own thread !
+            mail = Email(email, Dictionary.get_default(), "mail_register_subject")
+            variables = {"__activation_link": sid}
+            mail.load_body("activation", variables)
+            mail.run()
 
-        self.__database.commit()
-        return True
+            self.__database.commit()
+            return True
+        except sqlite3.IntegrityError:
+            self.__database.rollback()
+            return False
 
 ################################################################
 
@@ -251,8 +255,10 @@ class UserDB(object):
 ################################################################
 
     def revoke_session(self, user):
-        self.__database.execute(self.__delete_sessions, (user.get_username()))
-        #self.__database.commit()
+        cursor = self.__database.cursor()
+        cursor.execute("DELETE FROM Sessions WHERE email = ? AND state = ?",
+            (user.get_email(), self.SESSION_STANDARD))
+        self.__database.commit()
         return Cookie("session", "", datetime.now())
 
 ################################################################
@@ -289,19 +295,6 @@ class UserDB(object):
         if not salt:
             salt = base64.urlsafe_b64encode(os.urandom(96)).decode("UTF-8")
         return salt, Whirlpool(salt + password).hexdigest()
-
-################################################################
-
-    @staticmethod
-    def __load_user(row):
-        """Load an User object
-    
-        :type  row: array[...]
-        :param row: User's fields
-        :rtype:   User
-        :returns: An User object
-        """
-        return User(row[0], row[1], row[2], row[3], row[4])
 
 ################################################################
 

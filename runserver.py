@@ -75,7 +75,7 @@ class RESTServer(object):
             try:
                 logging.debug("Now serving " + str(path))
 
-                if not user and len(path) == 1:
+                if len(path) == 1:
                     if not path[0]:
                         path[0] = "index.html"
                     if path[0].endswith(".html"):
